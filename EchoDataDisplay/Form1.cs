@@ -92,6 +92,22 @@ namespace EchoDataDisplay
 
         private void createFolderOutput_Click(object sender, EventArgs e)
         {
+            //string[] files = Directory.GetFiles(textBox3.Text, "*.log");
+
+            var files200k = Directory.EnumerateFiles(textBox3.Text, "*.log", SearchOption.AllDirectories)
+            .Where(s => s.Contains("Dual_200kHz"));
+            List<string> files200kList = files200k.ToList();
+            var files450k = Directory.EnumerateFiles(textBox3.Text, "*.log", SearchOption.AllDirectories)
+            .Where(s => s.Contains("Dual_450kHz"));
+            List<string> files450kList = files450k.ToList();
+
+            //TODO Check that both arrays have the same size and each element has a pair in the other array.
+
+            for (int i = 0; i < files200k.Count(); i++)
+            {
+                string saveFileName = files200kList[i].Replace("200kHz_", "").Split(new[] { '.' }, 2)[0] + ".csv";
+                writeOutput(files200kList[i], files450kList[i], Path.Combine(textBox3.Text, saveFileName));
+            }
 
         }
 
