@@ -65,78 +65,8 @@ namespace EchoDataDisplay
 
                 string saveFilePath = saveFileDialog1.FileName;
 
+                writeOutput(textBox1.Text, textBox2.Text, saveFilePath);
 
-                string[] lines1 = System.IO.File.ReadAllLines(textBox1.Text);
-                string[] lines2 = System.IO.File.ReadAllLines(textBox2.Text);
-
-                var timeStampList = new List<string>();
-                var waterTempList = new List<string>();
-                var waterDepth1List = new List<string>();
-                var waterDepth2List = new List<string>();
-                var latLongList = new List<string>();
-
-                foreach (string line in lines1)
-                {
-                    string[] checksumRemoved = line.Split(new[] { '*' }, 2);
-                    string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
-
-                    switch (splitLine[0])
-                    {
-                        case "$SDZDA":
-                            {
-                                string jointLine = splitLine[1] + "," + splitLine[2] + "," + splitLine[3] + "," + splitLine[4];
-                                timeStampList.Add(jointLine);
-                                break;
-                            }
-                        case "$SDMTW":
-                            {
-                                string jointLine = splitLine[1] + splitLine[2];
-                                waterTempList.Add(jointLine);
-                                break;
-                            }
-                        case "$SDDBT":
-                            {
-                                string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
-                                waterDepth1List.Add(jointLine);
-                                break;
-                            }
-                        case "$GNGGA":
-                            {
-                                string jointLine = splitLine[2] + splitLine[3] + "," + splitLine[4] + splitLine[5];
-                                latLongList.Add(jointLine);
-                                break;
-                            }
-                        default:
-                            {
-                                break;
-                            }
-                    }
-                }
-
-                foreach (string line in lines2)
-                {
-                    if (line.StartsWith("$SDDBT"))
-                    {
-                        string[] checksumRemoved = line.Split(new[] { '*' }, 2);
-                        string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
-                        string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
-                        waterDepth2List.Add(jointLine);
-                    }
-                }
-
-                // Set a variable to the Documents path.
-                //string docPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-                // Write the string array to a new file named "WriteLines.txt".
-                using (StreamWriter outputFile = new StreamWriter(saveFilePath))
-                {
-                    outputFile.WriteLine("Time (hhmmss.ss),Day,Month,Year,Water Temp (C),Depth 1 (ft),Depth 1 (m),Depth 2 (ft),Depth 2 (m),Latitude,Longitude");
-                    for (int i = 0; i < timeStampList.Count; i++)
-                    {
-                        string row = timeStampList[i] + "," + waterTempList[i] + "," + waterDepth1List[i] + "," + waterDepth2List[i] + "," + latLongList[i];
-                        outputFile.WriteLine(row);
-                    }
-                }
                 MessageBox.Show("Output File Created", "Save Successful");
             }
         }
@@ -150,5 +80,92 @@ namespace EchoDataDisplay
         {
 
         }
+
+        private void openFolder_Click(object sender, EventArgs e)
+        {
+            folderBrowserDialog1.ShowDialog();
+
+            string directoryPath = folderBrowserDialog1.SelectedPath;
+
+            textBox3.Text = directoryPath;
+        }
+
+        private void createFolderOutput_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void writeOutput(string file1, string file2, string outputfile)
+        {
+            string[] lines1 = System.IO.File.ReadAllLines(file1);
+            string[] lines2 = System.IO.File.ReadAllLines(file2);
+
+            var timeStampList = new List<string>();
+            var waterTempList = new List<string>();
+            var waterDepth1List = new List<string>();
+            var waterDepth2List = new List<string>();
+            var latLongList = new List<string>();
+
+            foreach (string line in lines1)
+            {
+                string[] checksumRemoved = line.Split(new[] { '*' }, 2);
+                string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
+
+                switch (splitLine[0])
+                {
+                    case "$SDZDA":
+                        {
+                            string jointLine = splitLine[1] + "," + splitLine[2] + "," + splitLine[3] + "," + splitLine[4];
+                            timeStampList.Add(jointLine);
+                            break;
+                        }
+                    case "$SDMTW":
+                        {
+                            string jointLine = splitLine[1] + splitLine[2];
+                            waterTempList.Add(jointLine);
+                            break;
+                        }
+                    case "$SDDBT":
+                        {
+                            string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
+                            waterDepth1List.Add(jointLine);
+                            break;
+                        }
+                    case "$GNGGA":
+                        {
+                            string jointLine = splitLine[2] + splitLine[3] + "," + splitLine[4] + splitLine[5];
+                            latLongList.Add(jointLine);
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+            }
+
+            foreach (string line in lines2)
+            {
+                if (line.StartsWith("$SDDBT"))
+                {
+                    string[] checksumRemoved = line.Split(new[] { '*' }, 2);
+                    string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
+                    string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
+                    waterDepth2List.Add(jointLine);
+                }
+            }
+
+            // Write the string array to a new file.
+            using (StreamWriter outputFile = new StreamWriter(outputfile))
+            {
+                outputFile.WriteLine("Time (hhmmss.ss),Day,Month,Year,Water Temp (C),Depth 1 (ft),Depth 1 (m),Depth 2 (ft),Depth 2 (m),Latitude,Longitude");
+                for (int i = 0; i < timeStampList.Count; i++)
+                {
+                    string row = timeStampList[i] + "," + waterTempList[i] + "," + waterDepth1List[i] + "," + waterDepth2List[i] + "," + latLongList[i];
+                    outputFile.WriteLine(row);
+                }
+            }
+        }
+
     }
 }

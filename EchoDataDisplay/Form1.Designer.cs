@@ -45,6 +45,7 @@ namespace EchoDataDisplay
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -130,6 +131,7 @@ namespace EchoDataDisplay
             this.openFolder.TabIndex = 7;
             this.openFolder.Text = "Open Folder";
             this.openFolder.UseVisualStyleBackColor = true;
+            this.openFolder.Click += new System.EventHandler(this.openFolder_Click);
             // 
             // textBox3
             // 
@@ -146,6 +148,7 @@ namespace EchoDataDisplay
             this.createFolderOutput.TabIndex = 9;
             this.createFolderOutput.Text = "Create Files";
             this.createFolderOutput.UseVisualStyleBackColor = true;
+            this.createFolderOutput.Click += new System.EventHandler(this.createFolderOutput_Click);
             // 
             // tabControl1
             // 
@@ -223,6 +226,7 @@ namespace EchoDataDisplay
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
     }
 }
 
