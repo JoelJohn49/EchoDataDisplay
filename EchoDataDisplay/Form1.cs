@@ -54,6 +54,10 @@ namespace EchoDataDisplay
             {
                 MessageBox.Show("Missing Input Sensor Files", "Error");
             }
+            else if (textBox1.Text.Equals(textBox2.Text))
+            {
+                MessageBox.Show("The Same File Is Selected Twice", "Error");
+            }
             else
             {
                 saveFileDialog1.Title = "Choose File Destination";
@@ -61,13 +65,15 @@ namespace EchoDataDisplay
                 saveFileDialog1.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
                 saveFileDialog1.FilterIndex = 1;
 
-                saveFileDialog1.ShowDialog();
-
-                string saveFilePath = saveFileDialog1.FileName;
-
-                writeOutput(textBox1.Text, textBox2.Text, saveFilePath);
-
-                MessageBox.Show("Output File Created", "Save Successful");
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    string saveFilePath = saveFileDialog1.FileName;
+                    if (!String.IsNullOrEmpty(saveFilePath))
+                    {
+                        writeOutput(textBox1.Text, textBox2.Text, saveFilePath);
+                        MessageBox.Show("Output File Created", "Save Successful");
+                    }
+                }
             }
         }
 
@@ -191,6 +197,7 @@ namespace EchoDataDisplay
             }
 
             // Write the string array to a new file.
+
             using (StreamWriter outputFile = new StreamWriter(outputfile))
             {
                 outputFile.WriteLine("Time (hhmmss.ss),Day,Month,Year,Water Temp (C),Depth 1 (ft),Depth 1 (m),Depth 2 (ft),Depth 2 (m),Latitude,Longitude");
@@ -201,6 +208,5 @@ namespace EchoDataDisplay
                 }
             }
         }
-
     }
 }
