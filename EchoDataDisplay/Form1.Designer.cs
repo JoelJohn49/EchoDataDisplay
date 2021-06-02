@@ -71,7 +71,6 @@ namespace EchoDataDisplay
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(551, 23);
             this.textBox1.TabIndex = 1;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // openFile2
             // 
@@ -112,7 +111,6 @@ namespace EchoDataDisplay
             this.label1.Size = new System.Drawing.Size(166, 15);
             this.label1.TabIndex = 5;
             this.label1.Text = "Select the First Sensor Text File\r\n";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -176,7 +174,6 @@ namespace EchoDataDisplay
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Select File Pair";
             this.tabPage1.UseVisualStyleBackColor = true;
-            this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
             // 
             // tabPage2
             // 

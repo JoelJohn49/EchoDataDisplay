@@ -30,11 +30,6 @@ namespace EchoDataDisplay
             textBox1.Text = file1Path;
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void openFile2_Click(object sender, EventArgs e)
         {
             openFileDialog2.Title = "Open Second Sensor log File";
@@ -77,23 +72,13 @@ namespace EchoDataDisplay
             }
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void openFolder_Click(object sender, EventArgs e)
         {
-            folderBrowserDialog1.ShowDialog();
-
-            string directoryPath = folderBrowserDialog1.SelectedPath;
-
-            textBox3.Text = directoryPath;
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+            {
+                string directoryPath = folderBrowserDialog1.SelectedPath;
+                textBox3.Text = directoryPath;
+            }
         }
 
         private void createFolderOutput_Click(object sender, EventArgs e)
