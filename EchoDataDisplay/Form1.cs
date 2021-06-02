@@ -94,21 +94,40 @@ namespace EchoDataDisplay
         {
             //string[] files = Directory.GetFiles(textBox3.Text, "*.log");
 
-            var files200k = Directory.EnumerateFiles(textBox3.Text, "*.log", SearchOption.AllDirectories)
-            .Where(s => s.Contains("Dual_200kHz"));
-            List<string> files200kList = files200k.ToList();
-            var files450k = Directory.EnumerateFiles(textBox3.Text, "*.log", SearchOption.AllDirectories)
-            .Where(s => s.Contains("Dual_450kHz"));
-            List<string> files450kList = files450k.ToList();
-
-            //TODO Check that both arrays have the same size and each element has a pair in the other array.
-
-            for (int i = 0; i < files200k.Count(); i++)
+            if (!Directory.Exists(textBox3.Text))
             {
-                string saveFileName = files200kList[i].Replace("200kHz_", "").Split(new[] { '.' }, 2)[0] + ".csv";
-                writeOutput(files200kList[i], files450kList[i], Path.Combine(textBox3.Text, saveFileName));
+                MessageBox.Show("Missing Folder Path", "Error");
             }
+            else
+            {
+                var files200k = Directory.EnumerateFiles(textBox3.Text, "*.log", SearchOption.AllDirectories)
+            .Where(s => s.Contains("Dual_200kHz"));
+                List<string> files200kList = files200k.ToList();
+                var files450k = Directory.EnumerateFiles(textBox3.Text, "*.log", SearchOption.AllDirectories)
+                .Where(s => s.Contains("Dual_450kHz"));
+                List<string> files450kList = files450k.ToList();
 
+                files200kList.Sort();
+                List<string> files200kList_compare = files200kList.Select(s => s.Replace("200kHz_", "")).ToList();
+                files450kList.Sort();
+                List<string> files450kList_compare = files450kList.Select(s => s.Replace("450kHz_", "")).ToList();
+
+                //var newList = metricList.Select(s => s.Replace("XX", "1")).ToList();
+
+                //TODO Check that both arrays have the same size and each element has a pair in the other array.
+                if (files200kList_compare.SequenceEqual(files450kList_compare))
+                {
+                    for (int i = 0; i < files200k.Count(); i++)
+                    {
+                        string saveFileName = files200kList_compare[i].Split(new[] { '.' }, 2)[0] + ".csv";
+                        writeOutput(files200kList[i], files450kList[i], Path.Combine(textBox3.Text, saveFileName));
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Input Sensor Files Don't Match", "Error");
+                }
+            }
         }
 
         private void writeOutput(string file1, string file2, string outputfile)
