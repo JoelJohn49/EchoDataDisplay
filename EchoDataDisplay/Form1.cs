@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Globalization;
 
 namespace EchoDataDisplay
 {
@@ -65,7 +66,7 @@ namespace EchoDataDisplay
                     string saveFilePath = saveFileDialog1.FileName;
                     if (!String.IsNullOrEmpty(saveFilePath))
                     {
-                        writeOutput(textBox1.Text, textBox2.Text, saveFilePath);
+                        writeOutput(textBox1.Text, textBox2.Text, saveFilePath, positionFileCheck.Checked, posFileTextBox.Text);
                         MessageBox.Show("Output File Created", "Save Successful");
                     }
                 }
@@ -111,7 +112,8 @@ namespace EchoDataDisplay
                     for (int i = 0; i < files200k.Count(); i++)
                     {
                         string saveFileName = files200kList_compare[i].Split(new[] { '.' }, 2)[0] + ".csv";
-                        writeOutput(files200kList[i], files450kList[i], Path.Combine(textBox3.Text, saveFileName));
+                        string temp = "temp";
+                        writeOutput(files200kList[i], files450kList[i], Path.Combine(textBox3.Text, saveFileName), positionFileCheck.Checked, temp);
                     }
                 }
                 else
@@ -121,7 +123,30 @@ namespace EchoDataDisplay
             }
         }
 
-        private void writeOutput(string file1, string file2, string outputfile)
+        private void timeZoneText_TextChanged(object sender, EventArgs e)
+        {
+            //TO-DO Check that the text follows the required format and open an error window if it doesn't.
+        }
+
+        private void positionFileCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            openPosFile.Enabled = positionFileCheck.Checked;
+            posFileTextBox.Enabled = positionFileCheck.Checked;
+        }
+
+        private void openPosFile_Click(object sender, EventArgs e)
+        {
+            openFileDialog3.Title = "Open Optional Postion File";
+            openFileDialog3.Filter = "All files (*.*)|*.*";
+            openFileDialog3.FilterIndex = 0;
+            openFileDialog3.ShowDialog();
+
+            string openPosFilePath = openFileDialog3.FileName;
+
+            posFileTextBox.Text = openPosFilePath;
+        }
+
+        private void writeOutput(string file1, string file2, string outputfile, bool adjHeight, string file3)
         {
             string[] lines1 = System.IO.File.ReadAllLines(file1);
             string[] lines2 = System.IO.File.ReadAllLines(file2);
@@ -132,6 +157,14 @@ namespace EchoDataDisplay
             var waterDepth2List = new List<string>();
             var latLongList = new List<string>();
 
+            //var posTimeStampList = new List<string>();
+            var heightValues = new List<string>();
+            var adjustedDepth1 = new List<string>();
+            var adjustedDepth2 = new List<string>();
+
+            List<DateTimeOffset> posDateTimeStamps = new List<DateTimeOffset>();
+
+
             foreach (string line in lines1)
             {
                 string[] checksumRemoved = line.Split(new[] { '*' }, 2);
@@ -141,7 +174,37 @@ namespace EchoDataDisplay
                 {
                     case "$SDZDA":
                         {
-                            string jointLine = splitLine[1] + "," + splitLine[2] + "," + splitLine[3] + "," + splitLine[4];
+                            /*
+                            int year = Int32.Parse(splitLine[4]);
+                            int month = Int32.Parse(splitLine[3]);
+                            int date = Int32.Parse(splitLine[2]);
+                            int hours = Int32.Parse(splitLine[1].Substring(0, 2));
+                            int minutes = Int32.Parse(splitLine[1].Substring(2, 2));
+                            int seconds = Int32.Parse(splitLine[1].Substring(4, 2));
+                            int millisecond = Int32.Parse(splitLine[1].Substring(7, 2))*10;
+
+                            DateTime dateTime = new DateTime(year, month, date, hours, minutes, seconds, millisecond);
+                            DateTimeOffset targetTime;
+
+                            // Instantiate a DateTimeOffset value from a UTC time
+                            DateTime utcTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+                            targetTime = new DateTimeOffset(utcTime);
+
+                            */
+
+                            /*
+                            var value = DateTimeOffset.ParseExact(text,
+                                      "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz",
+                                      CultureInfo.InvariantCulture);
+                            */
+
+                            //string jointLine = year.ToString("D4") + "/" + month.ToString("D2") + "/" + date.ToString("D2");
+
+                            string hours = splitLine[1].Substring(0, 2);
+                            string minutes = splitLine[1].Substring(2, 2);
+                            string seconds = splitLine[1].Substring(4, 5);
+
+                            string jointLine = hours + ":" + minutes + ":" + seconds + "," + splitLine[2] + "/" + splitLine[3] + "/" + splitLine[4];
                             timeStampList.Add(jointLine);
                             break;
                         }
@@ -181,17 +244,79 @@ namespace EchoDataDisplay
                 }
             }
 
-            // Write the string array to a new file.
-
-            using (StreamWriter outputFile = new StreamWriter(outputfile))
+            if (adjHeight)
             {
-                outputFile.WriteLine("Time (hhmmss.ss),Day,Month,Year,Water Temp (C),Depth 1 (ft),Depth 1 (m),Depth 2 (ft),Depth 2 (m),Latitude,Longitude");
+                string[] lines3 = System.IO.File.ReadAllLines(file3);
+
+                foreach (string line in lines3)
+                {
+                    if (!line.StartsWith("%"))
+                    {
+                        string[] splitLine = line.Split(new[] { ',' });
+
+                        //Reformat and add values to posDateTimeStamps
+                        string posTimeStamp = splitLine[0];
+                        posTimeStamp += " UTC +0000";
+                        var posDateTime = DateTimeOffset.ParseExact(posTimeStamp, "yyyy/MM/dd HH:mm:ss.fff 'UTC' zzz", CultureInfo.InvariantCulture);
+                        posDateTimeStamps.Add(posDateTime);
+
+                        //Add values to heightValues
+                        heightValues.Add(splitLine[3]);
+                    }
+                }
+
                 for (int i = 0; i < timeStampList.Count; i++)
                 {
-                    string row = timeStampList[i] + "," + waterTempList[i] + "," + waterDepth1List[i] + "," + waterDepth2List[i] + "," + latLongList[i];
+                    string timeStamp = timeStampList[i] + " UTC +0000";
+                    var sonarDateTime = DateTimeOffset.ParseExact(timeStamp, "HH:mm:ss.ff,dd/MM/yyyy 'UTC' zzz", CultureInfo.InvariantCulture);
+
+                    TimeSpan minSpan = new TimeSpan(99, 0, 0, 0, 0);
+                    int closestIndex = 0;
+
+                    //TO-DO can be made more efficient as time stamps should be in order
+                    for (int j = 0; j < posDateTimeStamps.Count; j++)
+                    {
+                        TimeSpan difference = sonarDateTime.Subtract(posDateTimeStamps[j]).Duration();
+
+                        int comp = TimeSpan.Compare(difference, minSpan);
+
+                        if (comp < 0)
+                        {
+                            minSpan = difference;
+                            closestIndex = j;
+                        }
+                    }
+                    int adjustedDepthVal1 = Int32.Parse(heightValues[closestIndex]) - Int32.Parse(waterDepth1List[i]);
+                    adjustedDepth1.Add(adjustedDepthVal1.ToString());
+                    int adjustedDepthVal2 = Int32.Parse(heightValues[closestIndex]) - Int32.Parse(waterDepth2List[i]);
+                    adjustedDepth2.Add(adjustedDepthVal2.ToString());
+                }
+            }
+
+            // Write the string array to a new file.
+            using (StreamWriter outputFile = new StreamWriter(outputfile))
+            {
+                string heading = "Time (hh:mm:ss.ss),Date,Water Temp (C),Latitude,Longitude,Depth 1 (ft),Depth 1 (m),Depth 2 (ft),Depth 2 (m)";
+                if (adjHeight)
+                {
+                    heading += ",Adjusted Depth 1,Adjusted Depth 2";
+                }
+                outputFile.WriteLine(heading);
+                for (int i = 0; i < timeStampList.Count; i++)
+                {
+                    string row;
+                    if (adjHeight)
+                    {
+                        row = timeStampList[i] + "," + waterTempList[i] + "," + latLongList[i] + "," + waterDepth1List[i] + "," + waterDepth2List[i] + "," + adjustedDepth1[i] + "," + adjustedDepth2[i];
+                    }
+                    else
+                    {
+                        row = timeStampList[i] + "," + waterTempList[i] + "," + latLongList[i] + "," + waterDepth1List[i] + "," + waterDepth2List[i];
+                    }
                     outputFile.WriteLine(row);
                 }
             }
         }
+
     }
 }
