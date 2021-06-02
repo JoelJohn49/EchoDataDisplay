@@ -286,9 +286,16 @@ namespace EchoDataDisplay
                             closestIndex = j;
                         }
                     }
-                    int adjustedDepthVal1 = Int32.Parse(heightValues[closestIndex]) - Int32.Parse(waterDepth1List[i]);
+
+                    //TO-DO int32 Parse not correct.
+                    string sonarDepth1 = waterDepth1List[i].Split(new[] { ',' }, 2)[1];
+                    sonarDepth1 = sonarDepth1.Remove(sonarDepth1.Length - 1);
+                    int adjustedDepthVal1 = Int32.Parse(heightValues[closestIndex]) - Int32.Parse(sonarDepth1);
                     adjustedDepth1.Add(adjustedDepthVal1.ToString());
-                    int adjustedDepthVal2 = Int32.Parse(heightValues[closestIndex]) - Int32.Parse(waterDepth2List[i]);
+
+                    string sonarDepth2 = waterDepth2List[i].Split(new[] { ',' }, 2)[1];
+                    sonarDepth2 = sonarDepth2.Remove(sonarDepth2.Length - 1);
+                    int adjustedDepthVal2 = Int32.Parse(heightValues[closestIndex]) - Int32.Parse(sonarDepth2);
                     adjustedDepth2.Add(adjustedDepthVal2.ToString());
                 }
             }
