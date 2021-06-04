@@ -44,21 +44,16 @@ namespace EchoDataDisplay
             this.createFolderOutput = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.openPosFile = new System.Windows.Forms.Button();
             this.posFileTextBox = new System.Windows.Forms.TextBox();
             this.positionFileCheck = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.label3 = new System.Windows.Forms.Label();
-            this.convertTimeFormat = new System.Windows.Forms.CheckBox();
-            this.timeZoneText = new System.Windows.Forms.TextBox();
-            this.addTimeZone = new System.Windows.Forms.CheckBox();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.openPosFile = new System.Windows.Forms.Button();
             this.openFileDialog3 = new System.Windows.Forms.OpenFileDialog();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -189,6 +184,17 @@ namespace EchoDataDisplay
             this.tabPage1.Text = "Select File Pair";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // openPosFile
+            // 
+            this.openPosFile.Enabled = false;
+            this.openPosFile.Location = new System.Drawing.Point(45, 267);
+            this.openPosFile.Name = "openPosFile";
+            this.openPosFile.Size = new System.Drawing.Size(75, 23);
+            this.openPosFile.TabIndex = 10;
+            this.openPosFile.Text = "Open File";
+            this.openPosFile.UseVisualStyleBackColor = true;
+            this.openPosFile.Click += new System.EventHandler(this.openPosFile_Click);
+            // 
             // posFileTextBox
             // 
             this.posFileTextBox.Enabled = false;
@@ -223,10 +229,6 @@ namespace EchoDataDisplay
             // 
             // tabPage3
             // 
-            this.tabPage3.Controls.Add(this.label3);
-            this.tabPage3.Controls.Add(this.convertTimeFormat);
-            this.tabPage3.Controls.Add(this.timeZoneText);
-            this.tabPage3.Controls.Add(this.addTimeZone);
             this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -234,59 +236,6 @@ namespace EchoDataDisplay
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Settings";
             this.tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(35, 61);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(255, 15);
-            this.label3.TabIndex = 3;
-            this.label3.Text = "Local time zone offset from GMT (+/- HH:MM)";
-            // 
-            // convertTimeFormat
-            // 
-            this.convertTimeFormat.AutoSize = true;
-            this.convertTimeFormat.Checked = true;
-            this.convertTimeFormat.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.convertTimeFormat.Location = new System.Drawing.Point(35, 133);
-            this.convertTimeFormat.Name = "convertTimeFormat";
-            this.convertTimeFormat.Size = new System.Drawing.Size(187, 19);
-            this.convertTimeFormat.TabIndex = 2;
-            this.convertTimeFormat.Text = "Convert Time to HH:MM:SS.SS";
-            this.convertTimeFormat.UseVisualStyleBackColor = true;
-            // 
-            // timeZoneText
-            // 
-            this.timeZoneText.Location = new System.Drawing.Point(35, 79);
-            this.timeZoneText.Name = "timeZoneText";
-            this.timeZoneText.Size = new System.Drawing.Size(47, 23);
-            this.timeZoneText.TabIndex = 1;
-            this.timeZoneText.Text = "+10:00";
-            this.timeZoneText.TextChanged += new System.EventHandler(this.timeZoneText_TextChanged);
-            // 
-            // addTimeZone
-            // 
-            this.addTimeZone.AutoSize = true;
-            this.addTimeZone.Checked = true;
-            this.addTimeZone.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.addTimeZone.Location = new System.Drawing.Point(35, 32);
-            this.addTimeZone.Name = "addTimeZone";
-            this.addTimeZone.Size = new System.Drawing.Size(127, 19);
-            this.addTimeZone.TabIndex = 0;
-            this.addTimeZone.Text = "Convert Time Zone";
-            this.addTimeZone.UseVisualStyleBackColor = true;
-            // 
-            // openPosFile
-            // 
-            this.openPosFile.Enabled = false;
-            this.openPosFile.Location = new System.Drawing.Point(45, 267);
-            this.openPosFile.Name = "openPosFile";
-            this.openPosFile.Size = new System.Drawing.Size(75, 23);
-            this.openPosFile.TabIndex = 10;
-            this.openPosFile.Text = "Open File";
-            this.openPosFile.UseVisualStyleBackColor = true;
-            this.openPosFile.Click += new System.EventHandler(this.openPosFile_Click);
             // 
             // openFileDialog3
             // 
@@ -305,8 +254,6 @@ namespace EchoDataDisplay
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -331,10 +278,6 @@ namespace EchoDataDisplay
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.FolderBrowserDialog folderBrowserDialog1;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.CheckBox convertTimeFormat;
-        private System.Windows.Forms.TextBox timeZoneText;
-        private System.Windows.Forms.CheckBox addTimeZone;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox posFileTextBox;
         private System.Windows.Forms.CheckBox positionFileCheck;
         private System.Windows.Forms.Button openPosFile;
