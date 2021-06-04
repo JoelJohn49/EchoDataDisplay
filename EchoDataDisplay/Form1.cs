@@ -45,49 +45,60 @@ namespace EchoDataDisplay
 
         private void createOutput_Click(object sender, EventArgs e)
         {
+            bool noErrors = true;
 
             if (!File.Exists(textBox1.Text) || !File.Exists(textBox2.Text))
             {
                 MessageBox.Show("Missing Input Sensor Files", "Error");
+                noErrors = false;
             }
             else if (textBox1.Text.Equals(textBox2.Text))
             {
                 MessageBox.Show("The Same File Is Selected Twice", "Error");
+                noErrors = false;
             }
-            else
+            else if (positionFileCheck.Checked)
             {
-                if (positionFileCheck.Checked)
+                if (!File.Exists(posFileTextBox.Text))
                 {
-                    if (!File.Exists(posFileTextBox.Text))
-                    {
-                        MessageBox.Show("Missing Input Position File", "Error");
-                    }
-                    else if (posFileTextBox.Text.Equals(textBox1.Text) || posFileTextBox.Text.Equals(textBox2.Text))
-                    {
-                        MessageBox.Show("The Position File Is Also Selected As a Sensor File", "Error");
-                    }
-                    else
-                    {
-                        saveFileDialog1.Title = "Choose File Destination";
-                        saveFileDialog1.DefaultExt = "csv";
-                        saveFileDialog1.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
-                        saveFileDialog1.FilterIndex = 1;
+                    MessageBox.Show("Missing Input Position File", "Error");
+                    noErrors = false;
+                }
+                else if (posFileTextBox.Text.Equals(textBox1.Text) || posFileTextBox.Text.Equals(textBox2.Text))
+                {
+                    MessageBox.Show("The Position File Is Also Selected As a Sensor File", "Error");
+                    noErrors = false;
+                }
+            }
+            if (noErrors)
+            {
+                saveFileDialog1.Title = "Choose File Destination";
+                saveFileDialog1.DefaultExt = "csv";
+                saveFileDialog1.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
+                saveFileDialog1.FilterIndex = 1;
 
-                        if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    string saveFilePath = saveFileDialog1.FileName;
+                    if (!String.IsNullOrEmpty(saveFilePath))
+                    {
+                        try
                         {
-                            string saveFilePath = saveFileDialog1.FileName;
-                            if (!String.IsNullOrEmpty(saveFilePath))
-                            {
-                                try
-                                {
-                                    writeOutput(textBox1.Text, textBox2.Text, saveFilePath, positionFileCheck.Checked, posFileTextBox.Text);
-                                    MessageBox.Show("Output File Created", "Save Successful");
-                                }
-                                catch (IOException)
-                                {
-                                    MessageBox.Show("The file is unavailable because it is:" + Environment.NewLine + "still being written to" + Environment.NewLine + "or being processed by another thread" + Environment.NewLine + "or does not exist (has already been processed)", "Error");
-                                }
-                            }
+                            writeOutput(textBox1.Text,
+                                        textBox2.Text,
+                                        saveFilePath,
+                                        positionFileCheck.Checked,
+                                        posFileTextBox.Text);
+
+                            MessageBox.Show("Output File Created", "Save Successful");
+                        }
+                        catch (IOException)
+                        {
+                            MessageBox.Show("The file is unavailable because it is:" + Environment.NewLine
+                                            + "still being written to" + Environment.NewLine
+                                            + "or being processed by another thread"+ Environment.NewLine
+                                            + "or does not exist (has already been processed)",
+                                            "Error");
                         }
                     }
                 }
@@ -134,7 +145,10 @@ namespace EchoDataDisplay
                     {
                         string saveFileName = files200kList_compare[i].Split(new[] { '.' }, 2)[0] + ".csv";
                         string temp = "temp";
-                        writeOutput(files200kList[i], files450kList[i], Path.Combine(textBox3.Text, saveFileName), positionFileCheck.Checked, temp);
+                        writeOutput(files200kList[i],
+                                    files450kList[i],
+                                    Path.Combine(textBox3.Text, saveFileName),
+                                    positionFileCheck.Checked, temp);
                     }
                 }
                 else
@@ -199,7 +213,8 @@ namespace EchoDataDisplay
                             string minutes = splitLine[1].Substring(2, 2);
                             string seconds = splitLine[1].Substring(4, 5);
 
-                            string jointLine = hours + ":" + minutes + ":" + seconds + "," + splitLine[2] + "/" + splitLine[3] + "/" + splitLine[4];
+                            string jointLine = hours + ":" + minutes + ":" + seconds + ","
+                                               + splitLine[2] + "/" + splitLine[3] + "/" + splitLine[4];
                             timeStampList.Add(jointLine);
                             break;
                         }
@@ -253,7 +268,8 @@ namespace EchoDataDisplay
                         string posTimeStamp = splitLine[0];
                         posTimeStamp += " UTC +0000";
                         //TO-DO change parse to tryparse
-                        var posDateTime = DateTimeOffset.ParseExact(posTimeStamp, "yyyy/MM/dd HH:mm:ss.fff 'UTC' zzz", CultureInfo.InvariantCulture);
+                        var posDateTime = DateTimeOffset.ParseExact(posTimeStamp, "yyyy/MM/dd HH:mm:ss.fff 'UTC' zzz",
+                                                                    CultureInfo.InvariantCulture);
                         posDateTimeStamps.Add(posDateTime);
 
                         //Add values to heightValues
@@ -265,7 +281,8 @@ namespace EchoDataDisplay
                 {
                     string timeStamp = timeStampList[i] + " UTC +0000";
                     //TO-DO change parse to tryparse
-                    var sonarDateTime = DateTimeOffset.ParseExact(timeStamp, "HH:mm:ss.ff,dd/MM/yyyy 'UTC' zzz", CultureInfo.InvariantCulture);
+                    var sonarDateTime = DateTimeOffset.ParseExact(timeStamp, "HH:mm:ss.ff,dd/MM/yyyy 'UTC' zzz",
+                                                                    CultureInfo.InvariantCulture);
 
                     TimeSpan minSpan = new TimeSpan(99, 0, 0, 0, 0);
                     int closestIndex = 0;
@@ -287,7 +304,8 @@ namespace EchoDataDisplay
                     //TO-DO change parse to tryparse
                     double heightDatum = double.Parse(RemoveSpecialCharacters(heightValues[closestIndex]));
 
-                    //posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture));
+                    //posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff",
+                    //                                                          CultureInfo.InvariantCulture));
 
                     string sonarDepth1 = waterDepth1List[i].Split(new[] { ',' }, 2)[1];
                     sonarDepth1 = sonarDepth1.Remove(sonarDepth1.Length - 1);
@@ -312,7 +330,9 @@ namespace EchoDataDisplay
 
             using (StreamWriter outputFile = new StreamWriter(fileStream))
             {
-                string heading = "Time (HH:mm:ss.00),Date,Water Temp (C),Latitude,Longitude,Depth 1 (ft),Depth 1 (m),Depth 2 (ft),Depth 2 (m)";
+                string heading = "Time (HH:mm:ss.00),Date,Water Temp (C),Latitude,Longitude," +
+                    "Depth 1 (ft),Depth 1 (m),Depth 2 (ft),Depth 2 (m)";
+
                 if (adjHeight)
                 {
                     heading += ",Adjusted Depth 1,Adjusted Depth 2";
@@ -320,15 +340,14 @@ namespace EchoDataDisplay
                 outputFile.WriteLine(heading);
                 for (int i = 0; i < timeStampList.Count; i++)
                 {
-                    string row;
+                    string row = timeStampList[i] + "," + waterTempList[i] + "," + latLongList[i] + "," +
+                                waterDepth1List[i] + "," + waterDepth2List[i];
+
                     if (adjHeight)
                     {
-                        row = timeStampList[i] + "," + waterTempList[i] + "," + latLongList[i] + "," + waterDepth1List[i] + "," + waterDepth2List[i] + "," + adjustedDepth1[i] + "," + adjustedDepth2[i];
+                        row += "," + adjustedDepth1[i] + "," + adjustedDepth2[i];
                     }
-                    else
-                    {
-                        row = timeStampList[i] + "," + waterTempList[i] + "," + latLongList[i] + "," + waterDepth1List[i] + "," + waterDepth2List[i];
-                    }
+
                     outputFile.WriteLine(row);
                 }
             }
