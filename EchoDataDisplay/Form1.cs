@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Globalization;
+using System.Diagnostics;
 
 namespace EchoDataDisplay
 {
@@ -91,7 +92,8 @@ namespace EchoDataDisplay
                                         positionFileCheck.Checked,
                                         posFileTextBox.Text);
 
-                            MessageBox.Show("Output File Created", "Save Successful");
+                            new Process { StartInfo = new ProcessStartInfo(saveFilePath) { UseShellExecute = true } }.Start();
+                            //MessageBox.Show("Output File Created", "Save Successful");
                         }
                         catch (IOException)
                         {
