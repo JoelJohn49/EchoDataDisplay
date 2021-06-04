@@ -50,24 +50,28 @@ namespace EchoDataDisplay
 
             if (!File.Exists(textBox1.Text) || !File.Exists(textBox2.Text))
             {
-                MessageBox.Show(new Form { TopMost = true }, "Missing Input Sensor Files", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(new Form { TopMost = true }, "Missing Input Sensor Files", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 noErrors = false;
             }
             else if (textBox1.Text.Equals(textBox2.Text))
             {
-                MessageBox.Show(new Form { TopMost = true }, "The Same File Is Selected Twice", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(new Form { TopMost = true }, "The Same File Is Selected Twice", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 noErrors = false;
             }
             else if (positionFileCheck.Checked)
             {
                 if (!File.Exists(posFileTextBox.Text))
                 {
-                    MessageBox.Show(new Form { TopMost = true }, "Missing Input Position File", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(new Form { TopMost = true }, "Missing Input Position File", "Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     noErrors = false;
                 }
                 else if (posFileTextBox.Text.Equals(textBox1.Text) || posFileTextBox.Text.Equals(textBox2.Text))
                 {
-                    MessageBox.Show(new Form { TopMost = true }, "The Position File Is Also Selected As a Sensor File", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(new Form { TopMost = true }, "The Position File Is Also Selected As a Sensor File",
+                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     noErrors = false;
                 }
             }
@@ -95,12 +99,15 @@ namespace EchoDataDisplay
                             new Process { StartInfo = new ProcessStartInfo(saveFilePath) { UseShellExecute = true } }.Start();
                             //MessageBox.Show("Output File Created", "Save Successful");
                         }
-                        catch (IOException)
+                        catch (IOException ex)
                         {
-                            MessageBox.Show(new Form { TopMost = true }, "The file is unavailable because it is:"
-                                            + Environment.NewLine + "still being written to"
-                                            + Environment.NewLine + "or being processed by another thread",
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
                                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                            //MessageBox.Show(new Form { TopMost = true }, "The file is unavailable because it is:"
+                            //                + Environment.NewLine + "still being written to"
+                            //                + Environment.NewLine + "or being processed by another thread",
+                            //                "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
                     }
                 }
@@ -122,7 +129,9 @@ namespace EchoDataDisplay
 
             if (!Directory.Exists(textBox3.Text))
             {
-                MessageBox.Show("Missing Folder Path", "Error");
+                MessageBox.Show(new Form { TopMost = true }, "Missing Folder Path", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
             }
             else
             {
@@ -155,7 +164,10 @@ namespace EchoDataDisplay
                 }
                 else
                 {
-                    MessageBox.Show("Input Sensor Files Don't Match", "Error");
+                    //TO-DO update error message boxes
+                    MessageBox.Show(new Form { TopMost = true }, "Input Sensor Files Don't Match", "Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
                 }
             }
         }
@@ -199,7 +211,8 @@ namespace EchoDataDisplay
 
             //List<string> posDateTimeStr = new List<string>();
 
-
+            //TO-DO sanity check each case, check that there are enough characters, enough values in splitLine
+            //TO-DO Check what is being added to lists contain correct formatted strings "0.000f, 0.000M" for depth values
             foreach (string line in lines1)
             {
                 string[] checksumRemoved = line.Split(new[] { '*' }, 2);
@@ -209,6 +222,7 @@ namespace EchoDataDisplay
                 {
                     case "$SDZDA":
                         {
+                            //TO-DO Check each value is in the correct format.
                             string hours = splitLine[1].Substring(0, 2);
                             string minutes = splitLine[1].Substring(2, 2);
                             string seconds = splitLine[1].Substring(4, 5);
@@ -302,23 +316,50 @@ namespace EchoDataDisplay
                     }
 
                     //TO-DO change parse to tryparse
-                    double heightDatum = double.Parse(RemoveSpecialCharacters(heightValues[closestIndex]));
+                    //double heightDatum = double.Parse(RemoveSpecialCharacters(heightValues[closestIndex]));
+                    double heightDatum;
+                    bool heightDatumTried = double.TryParse(RemoveSpecialCharacters(heightValues[closestIndex]), out heightDatum);
+                    if (!heightDatumTried)
+                    {
+                        string errorMessage = "Error: Can not be converted into double." + Environment.NewLine +
+                                                "Height Value: \"" + heightValues[closestIndex] + "\" in The Position File";
+                        MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
 
                     //posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff",
                     //                                                          CultureInfo.InvariantCulture));
 
                     string sonarDepth1 = waterDepth1List[i].Split(new[] { ',' }, 2)[1];
                     sonarDepth1 = sonarDepth1.Remove(sonarDepth1.Length - 1);
-                    //TO-DO change parse to tryparse
-                    double sonarDepth1_Val = double.Parse(RemoveSpecialCharacters(sonarDepth1));
+
+                    string sonarDepth2 = waterDepth2List[i].Split(new[] { ',' }, 2)[1];
+                    sonarDepth2 = sonarDepth2.Remove(sonarDepth2.Length - 1);
+
+                    double sonarDepth1_Val;
+                    bool sonarDepth1_ValTried = double.TryParse(RemoveSpecialCharacters(sonarDepth1), out sonarDepth1_Val);
+                    if (!sonarDepth1_ValTried)
+                    {
+                        string errorMessage = "Error: Can not be converted into double." + Environment.NewLine +
+                                                "Depth Value: \"" + sonarDepth1 + "\" in The First Sonar File";
+                        MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+
+                    double sonarDepth2_Val;
+                    bool sonarDepth1_Va2Tried = double.TryParse(RemoveSpecialCharacters(sonarDepth2), out sonarDepth2_Val);
+                    if (!sonarDepth1_Va2Tried)
+                    {
+                        string errorMessage = "Error: Can not be converted into double." + Environment.NewLine +
+                                                "Depth Value: \"" + sonarDepth2 + "\" in The Second Sonar File";
+                        MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
+                                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+
                     double adjustedDepthVal1 = heightDatum - sonarDepth1_Val;
                     string depth1str = String.Format("{0:0.0000}", Math.Round(adjustedDepthVal1, 4));
                     adjustedDepth1.Add(depth1str);
 
-                    string sonarDepth2 = waterDepth2List[i].Split(new[] { ',' }, 2)[1];
-                    sonarDepth2 = sonarDepth2.Remove(sonarDepth2.Length - 1);
-                    //TO-DO change parse to tryparse
-                    double sonarDepth2_Val = double.Parse(RemoveSpecialCharacters(sonarDepth2));
                     double adjustedDepthVal2 = heightDatum - sonarDepth2_Val;
                     string depth2str = String.Format("{0:0.0000}", Math.Round(adjustedDepthVal2, 4));
                     adjustedDepth2.Add(depth2str);
