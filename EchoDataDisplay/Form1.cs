@@ -56,18 +56,39 @@ namespace EchoDataDisplay
             }
             else
             {
-                saveFileDialog1.Title = "Choose File Destination";
-                saveFileDialog1.DefaultExt = "csv";
-                saveFileDialog1.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
-                saveFileDialog1.FilterIndex = 1;
-
-                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                if (positionFileCheck.Checked)
                 {
-                    string saveFilePath = saveFileDialog1.FileName;
-                    if (!String.IsNullOrEmpty(saveFilePath))
+                    if (!File.Exists(posFileTextBox.Text))
                     {
-                        writeOutput(textBox1.Text, textBox2.Text, saveFilePath, positionFileCheck.Checked, posFileTextBox.Text);
-                        MessageBox.Show("Output File Created", "Save Successful");
+                        MessageBox.Show("Missing Input Position File", "Error");
+                    }
+                    else if (posFileTextBox.Text.Equals(textBox1.Text) || posFileTextBox.Text.Equals(textBox2.Text))
+                    {
+                        MessageBox.Show("The Position File Is Also Selected As a Sensor File", "Error");
+                    }
+                    else
+                    {
+                        saveFileDialog1.Title = "Choose File Destination";
+                        saveFileDialog1.DefaultExt = "csv";
+                        saveFileDialog1.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
+                        saveFileDialog1.FilterIndex = 1;
+
+                        if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                        {
+                            string saveFilePath = saveFileDialog1.FileName;
+                            if (!String.IsNullOrEmpty(saveFilePath))
+                            {
+                                try
+                                {
+                                    writeOutput(textBox1.Text, textBox2.Text, saveFilePath, positionFileCheck.Checked, posFileTextBox.Text);
+                                    MessageBox.Show("Output File Created", "Save Successful");
+                                }
+                                catch (IOException)
+                                {
+                                    MessageBox.Show("The file is unavailable because it is:" + Environment.NewLine + "still being written to" + Environment.NewLine + "or being processed by another thread" + Environment.NewLine + "or does not exist (has already been processed)", "Error");
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -123,11 +144,6 @@ namespace EchoDataDisplay
             }
         }
 
-        private void timeZoneText_TextChanged(object sender, EventArgs e)
-        {
-            //TO-DO Check that the text follows the required format and open an error window if it doesn't.
-        }
-
         private void positionFileCheck_CheckedChanged(object sender, EventArgs e)
         {
             openPosFile.Enabled = positionFileCheck.Checked;
@@ -148,6 +164,9 @@ namespace EchoDataDisplay
 
         private void writeOutput(string file1, string file2, string outputfile, bool adjHeight, string file3)
         {
+            //Locking output file so it can't be edited by someone while program is writing to it.
+            FileStream fileStream = new FileStream(outputfile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+
             string[] lines1 = System.IO.File.ReadAllLines(file1);
             string[] lines2 = System.IO.File.ReadAllLines(file2);
 
@@ -164,6 +183,8 @@ namespace EchoDataDisplay
 
             List<DateTimeOffset> posDateTimeStamps = new List<DateTimeOffset>();
 
+            //List<string> posDateTimeStr = new List<string>();
+
 
             foreach (string line in lines1)
             {
@@ -174,32 +195,6 @@ namespace EchoDataDisplay
                 {
                     case "$SDZDA":
                         {
-                            /*
-                            int year = Int32.Parse(splitLine[4]);
-                            int month = Int32.Parse(splitLine[3]);
-                            int date = Int32.Parse(splitLine[2]);
-                            int hours = Int32.Parse(splitLine[1].Substring(0, 2));
-                            int minutes = Int32.Parse(splitLine[1].Substring(2, 2));
-                            int seconds = Int32.Parse(splitLine[1].Substring(4, 2));
-                            int millisecond = Int32.Parse(splitLine[1].Substring(7, 2))*10;
-
-                            DateTime dateTime = new DateTime(year, month, date, hours, minutes, seconds, millisecond);
-                            DateTimeOffset targetTime;
-
-                            // Instantiate a DateTimeOffset value from a UTC time
-                            DateTime utcTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
-                            targetTime = new DateTimeOffset(utcTime);
-
-                            */
-
-                            /*
-                            var value = DateTimeOffset.ParseExact(text,
-                                      "yyyy'-'MM'-'dd'T'HH':'mm':'sszzz",
-                                      CultureInfo.InvariantCulture);
-                            */
-
-                            //string jointLine = year.ToString("D4") + "/" + month.ToString("D2") + "/" + date.ToString("D2");
-
                             string hours = splitLine[1].Substring(0, 2);
                             string minutes = splitLine[1].Substring(2, 2);
                             string seconds = splitLine[1].Substring(4, 5);
@@ -257,6 +252,7 @@ namespace EchoDataDisplay
                         //Reformat and add values to posDateTimeStamps
                         string posTimeStamp = splitLine[0];
                         posTimeStamp += " UTC +0000";
+                        //TO-DO change parse to tryparse
                         var posDateTime = DateTimeOffset.ParseExact(posTimeStamp, "yyyy/MM/dd HH:mm:ss.fff 'UTC' zzz", CultureInfo.InvariantCulture);
                         posDateTimeStamps.Add(posDateTime);
 
@@ -268,6 +264,7 @@ namespace EchoDataDisplay
                 for (int i = 0; i < timeStampList.Count; i++)
                 {
                     string timeStamp = timeStampList[i] + " UTC +0000";
+                    //TO-DO change parse to tryparse
                     var sonarDateTime = DateTimeOffset.ParseExact(timeStamp, "HH:mm:ss.ff,dd/MM/yyyy 'UTC' zzz", CultureInfo.InvariantCulture);
 
                     TimeSpan minSpan = new TimeSpan(99, 0, 0, 0, 0);
@@ -287,23 +284,35 @@ namespace EchoDataDisplay
                         }
                     }
 
-                    //TO-DO int32 Parse not correct.
+                    //TO-DO change parse to tryparse
+                    double heightDatum = double.Parse(RemoveSpecialCharacters(heightValues[closestIndex]));
+
+                    //posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff", CultureInfo.InvariantCulture));
+
                     string sonarDepth1 = waterDepth1List[i].Split(new[] { ',' }, 2)[1];
                     sonarDepth1 = sonarDepth1.Remove(sonarDepth1.Length - 1);
-                    int adjustedDepthVal1 = Int32.Parse(heightValues[closestIndex]) - Int32.Parse(sonarDepth1);
-                    adjustedDepth1.Add(adjustedDepthVal1.ToString());
+                    //TO-DO change parse to tryparse
+                    double sonarDepth1_Val = double.Parse(RemoveSpecialCharacters(sonarDepth1));
+                    double adjustedDepthVal1 = heightDatum - sonarDepth1_Val;
+                    string depth1str = String.Format("{0:0.0000}", Math.Round(adjustedDepthVal1, 4));
+                    adjustedDepth1.Add(depth1str);
 
                     string sonarDepth2 = waterDepth2List[i].Split(new[] { ',' }, 2)[1];
                     sonarDepth2 = sonarDepth2.Remove(sonarDepth2.Length - 1);
-                    int adjustedDepthVal2 = Int32.Parse(heightValues[closestIndex]) - Int32.Parse(sonarDepth2);
-                    adjustedDepth2.Add(adjustedDepthVal2.ToString());
+                    //TO-DO change parse to tryparse
+                    double sonarDepth2_Val = double.Parse(RemoveSpecialCharacters(sonarDepth2));
+                    double adjustedDepthVal2 = heightDatum - sonarDepth2_Val;
+                    string depth2str = String.Format("{0:0.0000}", Math.Round(adjustedDepthVal2, 4));
+                    adjustedDepth2.Add(depth2str);
                 }
             }
 
             // Write the string array to a new file.
-            using (StreamWriter outputFile = new StreamWriter(outputfile))
+            //TO-DO Check if file can be written to (might be open by something else)
+
+            using (StreamWriter outputFile = new StreamWriter(fileStream))
             {
-                string heading = "Time (hh:mm:ss.ss),Date,Water Temp (C),Latitude,Longitude,Depth 1 (ft),Depth 1 (m),Depth 2 (ft),Depth 2 (m)";
+                string heading = "Time (HH:mm:ss.00),Date,Water Temp (C),Latitude,Longitude,Depth 1 (ft),Depth 1 (m),Depth 2 (ft),Depth 2 (m)";
                 if (adjHeight)
                 {
                     heading += ",Adjusted Depth 1,Adjusted Depth 2";
@@ -323,6 +332,20 @@ namespace EchoDataDisplay
                     outputFile.WriteLine(row);
                 }
             }
+            fileStream.Close();
+        }
+
+        public string RemoveSpecialCharacters(string str)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in str)
+            {
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_')
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
         }
 
     }
