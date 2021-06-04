@@ -49,24 +49,24 @@ namespace EchoDataDisplay
 
             if (!File.Exists(textBox1.Text) || !File.Exists(textBox2.Text))
             {
-                MessageBox.Show("Missing Input Sensor Files", "Error");
+                MessageBox.Show(new Form { TopMost = true }, "Missing Input Sensor Files", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 noErrors = false;
             }
             else if (textBox1.Text.Equals(textBox2.Text))
             {
-                MessageBox.Show("The Same File Is Selected Twice", "Error");
+                MessageBox.Show(new Form { TopMost = true }, "The Same File Is Selected Twice", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 noErrors = false;
             }
             else if (positionFileCheck.Checked)
             {
                 if (!File.Exists(posFileTextBox.Text))
                 {
-                    MessageBox.Show("Missing Input Position File", "Error");
+                    MessageBox.Show(new Form { TopMost = true }, "Missing Input Position File", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     noErrors = false;
                 }
                 else if (posFileTextBox.Text.Equals(textBox1.Text) || posFileTextBox.Text.Equals(textBox2.Text))
                 {
-                    MessageBox.Show("The Position File Is Also Selected As a Sensor File", "Error");
+                    MessageBox.Show(new Form { TopMost = true }, "The Position File Is Also Selected As a Sensor File", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     noErrors = false;
                 }
             }
@@ -82,6 +82,7 @@ namespace EchoDataDisplay
                     string saveFilePath = saveFileDialog1.FileName;
                     if (!String.IsNullOrEmpty(saveFilePath))
                     {
+                        //Check if file can be written to (might be open by something else)
                         try
                         {
                             writeOutput(textBox1.Text,
@@ -94,11 +95,10 @@ namespace EchoDataDisplay
                         }
                         catch (IOException)
                         {
-                            MessageBox.Show("The file is unavailable because it is:" + Environment.NewLine
-                                            + "still being written to" + Environment.NewLine
-                                            + "or being processed by another thread"+ Environment.NewLine
-                                            + "or does not exist (has already been processed)",
-                                            "Error");
+                            MessageBox.Show(new Form { TopMost = true }, "The file is unavailable because it is:"
+                                            + Environment.NewLine + "still being written to"
+                                            + Environment.NewLine + "or being processed by another thread",
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
                     }
                 }
@@ -178,9 +178,7 @@ namespace EchoDataDisplay
 
         private void writeOutput(string file1, string file2, string outputfile, bool adjHeight, string file3)
         {
-            //Locking output file so it can't be edited by someone while program is writing to it.
-            FileStream fileStream = new FileStream(outputfile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-
+            //Read Files
             string[] lines1 = System.IO.File.ReadAllLines(file1);
             string[] lines2 = System.IO.File.ReadAllLines(file2);
 
@@ -325,9 +323,8 @@ namespace EchoDataDisplay
                 }
             }
 
-            // Write the string array to a new file.
-            //TO-DO Check if file can be written to (might be open by something else)
-
+            //Write the string array to a new file.
+            FileStream fileStream = new FileStream(outputfile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
             using (StreamWriter outputFile = new StreamWriter(fileStream))
             {
                 string heading = "Time (HH:mm:ss.00),Date,Water Temp (C),Latitude,Longitude," +
