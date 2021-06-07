@@ -29,6 +29,7 @@ namespace EchoDataDisplay
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.openFile1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
@@ -51,6 +52,7 @@ namespace EchoDataDisplay
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog3 = new System.Windows.Forms.OpenFileDialog();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -67,6 +69,7 @@ namespace EchoDataDisplay
             this.openFile1.Size = new System.Drawing.Size(75, 24);
             this.openFile1.TabIndex = 0;
             this.openFile1.Text = "Open File";
+            this.toolTip1.SetToolTip(this.openFile1, "Select a Sensor File to Merge From");
             this.openFile1.UseVisualStyleBackColor = true;
             this.openFile1.Click += new System.EventHandler(this.openFile1_Click);
             // 
@@ -84,6 +87,7 @@ namespace EchoDataDisplay
             this.openFile2.Size = new System.Drawing.Size(75, 24);
             this.openFile2.TabIndex = 2;
             this.openFile2.Text = "Open File";
+            this.toolTip1.SetToolTip(this.openFile2, "Select a Sensor File to Merge From");
             this.openFile2.UseVisualStyleBackColor = true;
             this.openFile2.Click += new System.EventHandler(this.openFile2_Click);
             // 
@@ -105,6 +109,7 @@ namespace EchoDataDisplay
             this.createOutput.Size = new System.Drawing.Size(75, 23);
             this.createOutput.TabIndex = 4;
             this.createOutput.Text = "Create File";
+            this.toolTip1.SetToolTip(this.createOutput, "Create The Output File and Open It");
             this.createOutput.UseVisualStyleBackColor = true;
             this.createOutput.Click += new System.EventHandler(this.createOutput_Click);
             // 
@@ -133,6 +138,7 @@ namespace EchoDataDisplay
             this.openFolder.Size = new System.Drawing.Size(85, 23);
             this.openFolder.TabIndex = 7;
             this.openFolder.Text = "Open Folder";
+            this.toolTip1.SetToolTip(this.openFolder, "Select a Directory Containing Pairs of Sensor Files");
             this.openFolder.UseVisualStyleBackColor = true;
             this.openFolder.Click += new System.EventHandler(this.openFolder_Click);
             // 
@@ -150,6 +156,7 @@ namespace EchoDataDisplay
             this.createFolderOutput.Size = new System.Drawing.Size(75, 23);
             this.createFolderOutput.TabIndex = 9;
             this.createFolderOutput.Text = "Create Files";
+            this.toolTip1.SetToolTip(this.createFolderOutput, "Batch Merge The Sensor Files and Save The Merged Files To The Selected Directory");
             this.createFolderOutput.UseVisualStyleBackColor = true;
             this.createFolderOutput.Click += new System.EventHandler(this.createFolderOutput_Click);
             // 
@@ -192,6 +199,7 @@ namespace EchoDataDisplay
             this.openPosFile.Size = new System.Drawing.Size(75, 23);
             this.openPosFile.TabIndex = 10;
             this.openPosFile.Text = "Open File";
+            this.toolTip1.SetToolTip(this.openPosFile, "Select a Position File to Calculate Adjusted Height From");
             this.openPosFile.UseVisualStyleBackColor = true;
             this.openPosFile.Click += new System.EventHandler(this.openPosFile_Click);
             // 
@@ -211,6 +219,7 @@ namespace EchoDataDisplay
             this.positionFileCheck.Size = new System.Drawing.Size(173, 19);
             this.positionFileCheck.TabIndex = 8;
             this.positionFileCheck.Text = "Select Optional Position File";
+            this.toolTip1.SetToolTip(this.positionFileCheck, "(Optional) Toggle Whether A Position File Will Be Selected");
             this.positionFileCheck.UseVisualStyleBackColor = true;
             this.positionFileCheck.CheckedChanged += new System.EventHandler(this.positionFileCheck_CheckedChanged);
             // 
@@ -282,6 +291,7 @@ namespace EchoDataDisplay
         private System.Windows.Forms.CheckBox positionFileCheck;
         private System.Windows.Forms.Button openPosFile;
         private System.Windows.Forms.OpenFileDialog openFileDialog3;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 

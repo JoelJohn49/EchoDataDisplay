@@ -87,7 +87,7 @@ namespace EchoDataDisplay
                     string saveFilePath = saveFileDialog1.FileName;
                     if (!String.IsNullOrEmpty(saveFilePath))
                     {
-                        //Check if file can be written to (might be open by something else)
+                        //Read from the files and write to the save file
                         try
                         {
                             writeOutput(textBox1.Text,
@@ -101,6 +101,7 @@ namespace EchoDataDisplay
                         }
                         catch (IOException ex)
                         {
+                            //Let the user know that the save file is open or can't be written to
                             MessageBox.Show(new Form { TopMost = true }, ex.Message,
                                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
@@ -408,8 +409,6 @@ namespace EchoDataDisplay
 
         public string HeightAdjustedDepth(string file, string depth, double heightDatum)
         {
-            //TO-DO re-factor following section into a function returning depth1str, params(file, waterDepth1List[i], heightDatum)
-
             string sonarDepth = depth.Split(new[] { ',' }, 2)[1];
             sonarDepth = sonarDepth.Remove(sonarDepth.Length - 1);
 
