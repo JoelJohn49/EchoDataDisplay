@@ -206,14 +206,13 @@ namespace EchoDataDisplay
             var waterDepth2List = new List<string>();
             var latLongList = new List<string>();
 
-            //var posTimeStampList = new List<string>();
             var heightValues = new List<string>();
             var adjustedDepth1 = new List<string>();
             var adjustedDepth2 = new List<string>();
 
             List<DateTimeOffset> posDateTimeStamps = new List<DateTimeOffset>();
 
-            //List<string> posDateTimeStr = new List<string>();
+            List<string> posDateTimeStr = new List<string>();
 
             //TO-DO sanity check each case, check that there are enough characters, enough values in splitLine
             //TO-DO Check what is being added to lists contain correct formatted strings "0.000f, 0.000M" for depth values
@@ -303,7 +302,6 @@ namespace EchoDataDisplay
                     var sonarDateTime = DateTimeOffset.ParseExact(timeStamp, "HH:mm:ss.ff,dd/MM/yyyy 'UTC' zzz",
                                                                     CultureInfo.InvariantCulture);
 
-                    //TO-DO check how minSpan effects imperfect data and see what value Judd wants
                     TimeSpan minSpan = new TimeSpan(0, 0, 5, 0, 0);
                     int closestIndex = 0;
                     bool minSpanChanged = false;
@@ -315,8 +313,6 @@ namespace EchoDataDisplay
                         TimeSpan difference = sonarDateTime.Subtract(posDateTimeStamps[j]).Duration();
 
                         int comp = TimeSpan.Compare(difference, minSpan);
-
-                        //TO-DO what happens if this if statement returns false for a point?
                         if (comp < 0)
                         {
                             minSpan = difference;
@@ -325,63 +321,67 @@ namespace EchoDataDisplay
                         }
                     }
 
-                    double heightDatum;
-                    bool heightDatumTried = double.TryParse(RemoveSpecialCharacters(heightValues[closestIndex]), out heightDatum);
-                    if (!heightDatumTried)
+                    //Check if a DateTime suitable pair from the pos file was found or if it's using the defualt value
+                    if (minSpanChanged)
                     {
-                        string errorMessage = "Error: Cannot be converted into double." + Environment.NewLine +
-                                                "Height Value: \"" + heightValues[closestIndex] + "\" in The Position File";
-                        //MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
-                        //                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        double heightDatum;
+                        bool heightDatumTried = double.TryParse(RemoveSpecialCharacters(heightValues[closestIndex]), out heightDatum);
+                        if (!heightDatumTried)
+                        {
+                            //TO-DO add file field
+                            string errorMessage = "Error: Cannot be converted into double." + Environment.NewLine +
+                                                    "Value: \"" + heightValues[closestIndex] + "\" in The Position File";
+                            //throw new DoubleConversionException(errorMessage);
+                            throw new DoubleConversionException(heightValues[closestIndex], file3);
+                        }
 
-                        throw new DoubleConversionException(errorMessage);
+                        posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff",
+                                                                                  CultureInfo.InvariantCulture));
+
+                        string sonarDepth1 = waterDepth1List[i].Split(new[] { ',' }, 2)[1];
+                        sonarDepth1 = sonarDepth1.Remove(sonarDepth1.Length - 1);
+
+                        string sonarDepth2 = waterDepth2List[i].Split(new[] { ',' }, 2)[1];
+                        sonarDepth2 = sonarDepth2.Remove(sonarDepth2.Length - 1);
+
+                        double sonarDepth1_Val;
+                        bool sonarDepth1_ValTried = double.TryParse(RemoveSpecialCharacters(sonarDepth1), out sonarDepth1_Val);
+                        if (!sonarDepth1_ValTried)
+                        {
+                            string errorMessage = "Error: Cannot be converted into double." + Environment.NewLine +
+                                                    "Depth Value: \"" + sonarDepth1 + "\" in The First Sonar File";
+                            throw new DoubleConversionException(errorMessage);
+                        }
+
+                        double sonarDepth2_Val;
+                        bool sonarDepth1_Va2Tried = double.TryParse(RemoveSpecialCharacters(sonarDepth2), out sonarDepth2_Val);
+                        if (!sonarDepth1_Va2Tried)
+                        {
+                            string errorMessage = "Error: Cannot be converted into double." + Environment.NewLine +
+                                                    "Depth Value: \"" + sonarDepth2 + "\" in The Second Sonar File";
+                            throw new DoubleConversionException(errorMessage);
+                        }
+
+                        double adjustedDepthVal1 = heightDatum - sonarDepth1_Val;
+                        string depth1str = String.Format("{0:0.0000}", Math.Round(adjustedDepthVal1, 4));
+                        adjustedDepth1.Add(depth1str);
+
+                        double adjustedDepthVal2 = heightDatum - sonarDepth2_Val;
+                        string depth2str = String.Format("{0:0.0000}", Math.Round(adjustedDepthVal2, 4));
+                        adjustedDepth2.Add(depth2str);
                     }
-
-                    //posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff",
-                    //                                                          CultureInfo.InvariantCulture));
-
-                    string sonarDepth1 = waterDepth1List[i].Split(new[] { ',' }, 2)[1];
-                    sonarDepth1 = sonarDepth1.Remove(sonarDepth1.Length - 1);
-
-                    string sonarDepth2 = waterDepth2List[i].Split(new[] { ',' }, 2)[1];
-                    sonarDepth2 = sonarDepth2.Remove(sonarDepth2.Length - 1);
-
-                    double sonarDepth1_Val;
-                    bool sonarDepth1_ValTried = double.TryParse(RemoveSpecialCharacters(sonarDepth1), out sonarDepth1_Val);
-                    if (!sonarDepth1_ValTried)
+                    else
                     {
-                        string errorMessage = "Error: Cannot be converted into double." + Environment.NewLine +
-                                                "Depth Value: \"" + sonarDepth1 + "\" in The First Sonar File";
-                        //MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
-                        //                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
-                        throw new DoubleConversionException(errorMessage);
+                        adjustedDepth1.Add("");
+                        adjustedDepth2.Add("");
+                        posDateTimeStr.Add("");
                     }
-
-                    double sonarDepth2_Val;
-                    bool sonarDepth1_Va2Tried = double.TryParse(RemoveSpecialCharacters(sonarDepth2), out sonarDepth2_Val);
-                    if (!sonarDepth1_Va2Tried)
-                    {
-                        string errorMessage = "Error: Cannot be converted into double." + Environment.NewLine +
-                                                "Depth Value: \"" + sonarDepth2 + "\" in The Second Sonar File";
-                        //MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
-                        //                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
-                        throw new DoubleConversionException(errorMessage);
-                    }
-
-                    double adjustedDepthVal1 = heightDatum - sonarDepth1_Val;
-                    string depth1str = String.Format("{0:0.0000}", Math.Round(adjustedDepthVal1, 4));
-                    adjustedDepth1.Add(depth1str);
-
-                    double adjustedDepthVal2 = heightDatum - sonarDepth2_Val;
-                    string depth2str = String.Format("{0:0.0000}", Math.Round(adjustedDepthVal2, 4));
-                    adjustedDepth2.Add(depth2str);
+                    
                 }
             }
 
             //Write the string array to a new file.
-            FileStream fileStream = new FileStream(outputfile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            FileStream fileStream = new FileStream(outputfile, FileMode.Create, FileAccess.ReadWrite);
             using (StreamWriter outputFile = new StreamWriter(fileStream))
             {
                 string heading = "Time (HH:mm:ss.00),Date,Water Temp (C),Latitude,Longitude," +
@@ -399,7 +399,7 @@ namespace EchoDataDisplay
 
                     if (adjHeight)
                     {
-                        row += "," + adjustedDepth1[i] + "," + adjustedDepth2[i];
+                        row += "," + adjustedDepth1[i] + "," + adjustedDepth2[i] + "," + posDateTimeStr[i];
                     }
 
                     outputFile.WriteLine(row);
