@@ -103,13 +103,13 @@ namespace EchoDataDisplay
                         {
                             MessageBox.Show(new Form { TopMost = true }, ex.Message,
                                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
-                            //MessageBox.Show(new Form { TopMost = true }, "The file is unavailable because it is:"
-                            //                + Environment.NewLine + "still being written to"
-                            //                + Environment.NewLine + "or being processed by another thread",
-                            //                "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
                         catch (DoubleConversionException ex)
+                        {
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                        catch (DateTimeConversionException ex)
                         {
                             MessageBox.Show(new Form { TopMost = true }, ex.Message,
                                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
@@ -151,8 +151,6 @@ namespace EchoDataDisplay
                 List<string> files200kList_compare = files200kList.Select(s => s.Replace("200kHz_", "")).ToList();
                 files450kList.Sort();
                 List<string> files450kList_compare = files450kList.Select(s => s.Replace("450kHz_", "")).ToList();
-
-                //var newList = metricList.Select(s => s.Replace("XX", "1")).ToList();
 
                 //TO-DO Check that both arrays have the same size and each element has a pair in the other array.
                 if (files200kList_compare.SequenceEqual(files450kList_compare))
@@ -281,15 +279,22 @@ namespace EchoDataDisplay
                     if (!line.StartsWith("%"))
                     {
                         string[] splitLine = line.Split(new[] { ',' });
-
-                        //Reformat and add values to posDateTimeStamps
                         string posTimeStamp = splitLine[0];
-                        posTimeStamp += " UTC +0000";
-                        //TO-DO change parse to tryparse
-                        var posDateTime = DateTimeOffset.ParseExact(posTimeStamp, "yyyy/MM/dd HH:mm:ss.fff 'UTC' zzz",
-                                                                    CultureInfo.InvariantCulture);
+
+                        //Convert the string values from the position file into DateTimeOffset
+                        DateTimeOffset posDateTime;
+                        string posDateTimeFormat = "yyyy/MM/dd HH:mm:ss.fff";
+                        bool posDateTimeTried = DateTimeOffset.TryParseExact(posTimeStamp + " UTC +0000", posDateTimeFormat + " 'UTC' zzz",
+                                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out posDateTime);
+
+                        if (!posDateTimeTried)
+                        {
+                            throw new DateTimeConversionException(posTimeStamp, file3, posDateTimeFormat);
+                        }
+
                         posDateTimeStamps.Add(posDateTime);
 
+                        //TO-DO check if height needs to be checked
                         //Add values to heightValues
                         heightValues.Add(splitLine[3]);
                     }
@@ -299,9 +304,17 @@ namespace EchoDataDisplay
                 for (int i = 0; i < timeStampList.Count; i++)
                 {
                     string timeStamp = timeStampList[i] + " UTC +0000";
-                    //TO-DO change parse to tryparse
-                    var sonarDateTime = DateTimeOffset.ParseExact(timeStamp, "HH:mm:ss.ff,dd/MM/yyyy 'UTC' zzz",
-                                                                    CultureInfo.InvariantCulture);
+
+                    //Convert the string values from the first sonar file into DateTimeOffset
+                    DateTimeOffset sonarDateTime;
+                    string sonarDateTimeFormat = "HH:mm:ss.ff,dd/MM/yyyy 'UTC' zzz";
+                    bool sonarDateTimeTried = DateTimeOffset.TryParseExact(timeStamp, sonarDateTimeFormat,
+                                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out sonarDateTime);
+
+                    if (!sonarDateTimeTried)
+                    {
+                        throw new DateTimeConversionException(timeStamp, file1, sonarDateTimeFormat);
+                    }
 
                     TimeSpan minSpan = new TimeSpan(0, 0, 5, 0, 0);
                     int closestIndex = 0;

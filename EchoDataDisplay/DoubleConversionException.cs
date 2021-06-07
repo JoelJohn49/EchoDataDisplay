@@ -20,7 +20,6 @@ namespace EchoDataDisplay
         public DoubleConversionException(string failedToConvertValue, string fileName)
             : base("Error: Cannot be converted into double." + Environment.NewLine + "Value: \"" + failedToConvertValue + "\" in " + fileName)
         {
-            //this.failedToConvertValue = failedToConvertValue;
         }
 
         public DoubleConversionException(string message, Exception innerException)
