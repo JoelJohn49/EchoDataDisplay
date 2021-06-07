@@ -109,6 +109,11 @@ namespace EchoDataDisplay
                             //                + Environment.NewLine + "or being processed by another thread",
                             //                "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
+                        catch (DoubleConversionException ex)
+                        {
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
                     }
                 }
             }
@@ -149,7 +154,7 @@ namespace EchoDataDisplay
 
                 //var newList = metricList.Select(s => s.Replace("XX", "1")).ToList();
 
-                //TODO Check that both arrays have the same size and each element has a pair in the other array.
+                //TO-DO Check that both arrays have the same size and each element has a pair in the other array.
                 if (files200kList_compare.SequenceEqual(files450kList_compare))
                 {
                     for (int i = 0; i < files200k.Count(); i++)
@@ -164,7 +169,6 @@ namespace EchoDataDisplay
                 }
                 else
                 {
-                    //TO-DO update error message boxes
                     MessageBox.Show(new Form { TopMost = true }, "Input Sensor Files Don't Match", "Error",
                                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
@@ -291,6 +295,7 @@ namespace EchoDataDisplay
                     }
                 }
 
+                //Loop through each DateTime from the first sensor file
                 for (int i = 0; i < timeStampList.Count; i++)
                 {
                     string timeStamp = timeStampList[i] + " UTC +0000";
@@ -298,33 +303,38 @@ namespace EchoDataDisplay
                     var sonarDateTime = DateTimeOffset.ParseExact(timeStamp, "HH:mm:ss.ff,dd/MM/yyyy 'UTC' zzz",
                                                                     CultureInfo.InvariantCulture);
 
-                    TimeSpan minSpan = new TimeSpan(99, 0, 0, 0, 0);
+                    //TO-DO check how minSpan effects imperfect data and see what value Judd wants
+                    TimeSpan minSpan = new TimeSpan(0, 0, 5, 0, 0);
                     int closestIndex = 0;
+                    bool minSpanChanged = false;
 
                     //TO-DO can be made more efficient as time stamps should be in order
+                    //Loop through each DateTime from the position file.
                     for (int j = 0; j < posDateTimeStamps.Count; j++)
                     {
                         TimeSpan difference = sonarDateTime.Subtract(posDateTimeStamps[j]).Duration();
 
                         int comp = TimeSpan.Compare(difference, minSpan);
 
+                        //TO-DO what happens if this if statement returns false for a point?
                         if (comp < 0)
                         {
                             minSpan = difference;
                             closestIndex = j;
+                            minSpanChanged = true;
                         }
                     }
 
-                    //TO-DO change parse to tryparse
-                    //double heightDatum = double.Parse(RemoveSpecialCharacters(heightValues[closestIndex]));
                     double heightDatum;
                     bool heightDatumTried = double.TryParse(RemoveSpecialCharacters(heightValues[closestIndex]), out heightDatum);
                     if (!heightDatumTried)
                     {
-                        string errorMessage = "Error: Can not be converted into double." + Environment.NewLine +
+                        string errorMessage = "Error: Cannot be converted into double." + Environment.NewLine +
                                                 "Height Value: \"" + heightValues[closestIndex] + "\" in The Position File";
-                        MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        //MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
+                        //                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                        throw new DoubleConversionException(errorMessage);
                     }
 
                     //posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff",
@@ -340,20 +350,24 @@ namespace EchoDataDisplay
                     bool sonarDepth1_ValTried = double.TryParse(RemoveSpecialCharacters(sonarDepth1), out sonarDepth1_Val);
                     if (!sonarDepth1_ValTried)
                     {
-                        string errorMessage = "Error: Can not be converted into double." + Environment.NewLine +
+                        string errorMessage = "Error: Cannot be converted into double." + Environment.NewLine +
                                                 "Depth Value: \"" + sonarDepth1 + "\" in The First Sonar File";
-                        MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        //MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
+                        //                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                        throw new DoubleConversionException(errorMessage);
                     }
 
                     double sonarDepth2_Val;
                     bool sonarDepth1_Va2Tried = double.TryParse(RemoveSpecialCharacters(sonarDepth2), out sonarDepth2_Val);
                     if (!sonarDepth1_Va2Tried)
                     {
-                        string errorMessage = "Error: Can not be converted into double." + Environment.NewLine +
+                        string errorMessage = "Error: Cannot be converted into double." + Environment.NewLine +
                                                 "Depth Value: \"" + sonarDepth2 + "\" in The Second Sonar File";
-                        MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
-                                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        //MessageBox.Show(new Form { TopMost = true }, errorMessage, "Error",
+                        //                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                        throw new DoubleConversionException(errorMessage);
                     }
 
                     double adjustedDepthVal1 = heightDatum - sonarDepth1_Val;
