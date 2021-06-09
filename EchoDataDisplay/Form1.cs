@@ -280,8 +280,7 @@ namespace EchoDataDisplay
 
                             //Use regex to check if the NMEA Sentence follows the standard formatting and
                             //throw an exception if it doesn't.
-                            string depthRGX = @"^\$SDDBT,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*,
-                                                (\d+(\.\d+)*){0,1},[a-zA-Z]*";
+                            string depthRGX = @"^\$SDDBT(,(\d+(\.\d+)*){0,1},[a-zA-Z]*){2}";
                             if (!Regex.IsMatch(line, depthRGX))
                             {
                                 throw new InputDataFormatException(splitLine[0].Substring(3),
@@ -330,8 +329,7 @@ namespace EchoDataDisplay
 
                     //Use regex to check if the NMEA Sentence follows the standard formatting and
                     //throw an exception if it doesn't.
-                    string depthRGX = @"^\$SDDBT,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*,
-                                        (\d+(\.\d+)*){0,1},[a-zA-Z]*";
+                    string depthRGX = @"^\$SDDBT(,(\d+(\.\d+)*){0,1},[a-zA-Z]*){2}";
                     if (!Regex.IsMatch(line, depthRGX))
                     {
                         throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
