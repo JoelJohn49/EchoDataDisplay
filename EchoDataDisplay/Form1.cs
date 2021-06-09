@@ -97,7 +97,11 @@ namespace EchoDataDisplay
                                         positionFileCheck.Checked,
                                         posFileTextBox.Text);
 
-                            new Process { StartInfo = new ProcessStartInfo(saveFilePath) { UseShellExecute = true } }.Start();
+                            //Open the csv file at completion.
+                            new Process
+                            {
+                                StartInfo = new ProcessStartInfo(saveFilePath){ UseShellExecute = true }
+                            }.Start();
                             //MessageBox.Show("Output File Created", "Save Successful");
                         }
                         catch (IOException ex)
@@ -137,13 +141,10 @@ namespace EchoDataDisplay
 
         private void createFolderOutput_Click(object sender, EventArgs e)
         {
-            //string[] files = Directory.GetFiles(textBox3.Text, "*.log");
-
             if (!Directory.Exists(textBox3.Text))
             {
                 MessageBox.Show(new Form { TopMost = true }, "Missing Folder Path", "Error",
                                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-
             }
             else
             {
@@ -156,11 +157,14 @@ namespace EchoDataDisplay
                 List<string> files450kList = files450k.ToList();
 
                 files200kList.Sort();
-                List<string> files200kList_compare = files200kList.Select(s => s.Replace("200kHz_", "")).ToList();
                 files450kList.Sort();
+
+                //Remove the sensor frequency from the name of the file so that paired files will have the same name
+                //and can be compared.
+                List<string> files200kList_compare = files200kList.Select(s => s.Replace("200kHz_", "")).ToList();
                 List<string> files450kList_compare = files450kList.Select(s => s.Replace("450kHz_", "")).ToList();
 
-                //TO-DO Check that both arrays have the same size and each element has a pair in the other array.
+                //Check that both arrays have the same size and each element has a pair in the other array.
                 if (files200kList_compare.SequenceEqual(files450kList_compare))
                 {
                     for (int i = 0; i < files200k.Count(); i++)
@@ -237,7 +241,8 @@ namespace EchoDataDisplay
                             string dateTimeRGX = @"^\$SDZDA,\d{6}\.\d{2},\d{2},\d{2},\d{4},\d{2},\d{2}";
                             if (!Regex.IsMatch(line, dateTimeRGX))
                             {
-                                throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
+                                throw new InputDataFormatException(splitLine[0].Substring(3),
+                                    (lineNum + 1).ToString(), file1);
                             }
 
                             //Constructs a string that can be later Parsed into a dateTimeOffset Type.
@@ -260,7 +265,8 @@ namespace EchoDataDisplay
                             string tempRGX = @"^\$SDMTW,-*\d+(\.\d+)*,";
                             if (!Regex.IsMatch(line, tempRGX))
                             {
-                                throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
+                                throw new InputDataFormatException(splitLine[0].Substring(3),
+                                    (lineNum + 1).ToString(), file1);
                             }
                             //Adds the unit 'C' for celcius to the temperature value, remove the following line and
                             //change it so it just adds spltiLine[1] if the unit isn't needed.
@@ -274,10 +280,12 @@ namespace EchoDataDisplay
 
                             //Use regex to check if the NMEA Sentence follows the standard formatting and
                             //throw an exception if it doesn't.
-                            string depthRGX = @"^\$SDDBT,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*";
+                            string depthRGX = @"^\$SDDBT,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*,
+                                                (\d+(\.\d+)*){0,1},[a-zA-Z]*";
                             if (!Regex.IsMatch(line, depthRGX))
                             {
-                                throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
+                                throw new InputDataFormatException(splitLine[0].Substring(3),
+                                    (lineNum + 1).ToString(), file1);
                             }
                             //Adds depth in feet + f (unit of feet) + , + depth in meters + M (unit of meters)
                             string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
@@ -286,14 +294,16 @@ namespace EchoDataDisplay
                         }
                     case "$GNGGA":
                         {
-                            //If the sentence is a GPS' Global Positioning System Fix Data reading then it runs this block.
+                            //If the sentence is a GPS' Global Positioning System Fix Data reading then
+                            //it runs this block.
 
                             //Use regex to check if the NMEA Sentence follows the standard formatting and
                             //throw an exception if it doesn't.
                             string gpsRGX = @"^\$GNGGA,[^,]*,-*\d+.\d+,[a-zA-Z]*,-*\d+.\d+,[a-zA-Z]*,";
                             if (!Regex.IsMatch(line, gpsRGX))
                             {
-                                throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
+                                throw new InputDataFormatException(splitLine[0].Substring(3),
+                                    (lineNum + 1).ToString(), file1);
                             }
 
                             //Adds Latitude + North or South + , + Longitude + East or West
@@ -320,7 +330,8 @@ namespace EchoDataDisplay
 
                     //Use regex to check if the NMEA Sentence follows the standard formatting and
                     //throw an exception if it doesn't.
-                    string depthRGX = @"^\$SDDBT,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*";
+                    string depthRGX = @"^\$SDDBT,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*,
+                                        (\d+(\.\d+)*){0,1},[a-zA-Z]*";
                     if (!Regex.IsMatch(line, depthRGX))
                     {
                         throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
@@ -340,14 +351,6 @@ namespace EchoDataDisplay
                     string line = lines3[lineNum];
                     if (!line.StartsWith("%"))
                     {
-                        //Use regex to check if the lines in the pos file follows the required formatting and
-                        //throw an exception if it doesn't.
-                        //string posRGX = @"^\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}.\d+,[^,]*,[^,]*,\s*\d+(.\d+)*";
-                        //if (!Regex.IsMatch(line, posRGX))
-                        //{
-                        //    throw new InputDataFormatException((lineNum + 1).ToString(), file1);
-                        //}
-
                         string[] splitLine = line.Split(new[] { ',' });
 
                         if (splitLine.Count() < 4)
@@ -360,8 +363,9 @@ namespace EchoDataDisplay
                         //Convert the string values from the position file into DateTimeOffset
                         DateTimeOffset posDateTime;
                         string posDateTimeFormat = "yyyy/MM/dd HH:mm:ss.fff";
-                        bool posDateTimeTried = DateTimeOffset.TryParseExact(posTimeStamp + " UTC +0000", posDateTimeFormat + " 'UTC' zzz",
-                                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out posDateTime);
+                        bool posDateTimeTried = DateTimeOffset.TryParseExact(posTimeStamp + " UTC +0000",
+                                                posDateTimeFormat + " 'UTC' zzz", CultureInfo.InvariantCulture,
+                                                DateTimeStyles.AllowWhiteSpaces, out posDateTime);
 
                         if (!posDateTimeTried)
                         {
@@ -384,7 +388,8 @@ namespace EchoDataDisplay
                     DateTimeOffset sonarDateTime;
                     string sonarDateTimeFormat = "HH:mm:ss.ff,dd/MM/yyyy 'UTC' zzz";
                     bool sonarDateTimeTried = DateTimeOffset.TryParseExact(timeStamp, sonarDateTimeFormat,
-                                                                    CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces, out sonarDateTime);
+                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces,
+                                                out sonarDateTime);
 
                     if (!sonarDateTimeTried)
                     {
@@ -414,7 +419,8 @@ namespace EchoDataDisplay
                     if (minSpanChanged)
                     {
                         double heightDatum;
-                        bool heightDatumTried = double.TryParse(RemoveSpecialCharacters(heightValues[closestIndex]), out heightDatum);
+                        bool heightDatumTried = double.TryParse(RemoveSpecialCharacters(heightValues[closestIndex]),
+                                                out heightDatum);
                         if (!heightDatumTried)
                         {
                             throw new DoubleConversionException(heightValues[closestIndex], file3);
