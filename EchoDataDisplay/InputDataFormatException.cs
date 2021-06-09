@@ -14,6 +14,11 @@ namespace EchoDataDisplay
         {
         }
 
+        public InputDataFormatException(string lineNum, string file)
+            : base("Error: Input Data has Incorrect Formating." + Environment.NewLine + "Expected a line with 4 or more comma separated values at line: " + lineNum + " in file: " + file)
+        {
+        }
+
         public InputDataFormatException(string header, string lineNum, string file) 
             : base("Error: Input Data has Incorrect Formating." + Environment.NewLine + "Expected a sentence of the form: " + header + " at line: " + lineNum + " in file: " + file)
         {

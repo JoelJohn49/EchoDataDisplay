@@ -148,8 +148,9 @@ namespace EchoDataDisplay
             else
             {
                 var files200k = Directory.EnumerateFiles(textBox3.Text, "*.log", SearchOption.AllDirectories)
-            .Where(s => s.Contains("Dual_200kHz"));
+                .Where(s => s.Contains("Dual_200kHz"));
                 List<string> files200kList = files200k.ToList();
+
                 var files450k = Directory.EnumerateFiles(textBox3.Text, "*.log", SearchOption.AllDirectories)
                 .Where(s => s.Contains("Dual_450kHz"));
                 List<string> files450kList = files450k.ToList();
@@ -217,13 +218,8 @@ namespace EchoDataDisplay
 
             List<DateTimeOffset> posDateTimeStamps = new List<DateTimeOffset>();
 
-            //TO-DO remove posDateTimeStr
-            List<string> posDateTimeStr = new List<string>();
+            //List<string> posDateTimeStr = new List<string>();
 
-            //TO-DO sanity check each case, check that there are enough characters, enough values in splitLine
-            //TO-DO Check what is being added to lists contain correct formatted strings "0.000f, 0.000M" for depth values
-
-            //foreach (string line in lines1)
             for (int lineNum = 0; lineNum < lines1.GetLength(0); lineNum++)
             {
                 string line = lines1[lineNum];
@@ -339,11 +335,26 @@ namespace EchoDataDisplay
             {
                 string[] lines3 = System.IO.File.ReadAllLines(file3);
 
-                foreach (string line in lines3)
+                for (int lineNum = 0; lineNum < lines3.GetLength(0); lineNum++)
                 {
+                    string line = lines3[lineNum];
                     if (!line.StartsWith("%"))
                     {
+                        //Use regex to check if the lines in the pos file follows the required formatting and
+                        //throw an exception if it doesn't.
+                        //string posRGX = @"^\d{4}\/\d{2}\/\d{2}\s\d{2}:\d{2}:\d{2}.\d+,[^,]*,[^,]*,\s*\d+(.\d+)*";
+                        //if (!Regex.IsMatch(line, posRGX))
+                        //{
+                        //    throw new InputDataFormatException((lineNum + 1).ToString(), file1);
+                        //}
+
                         string[] splitLine = line.Split(new[] { ',' });
+
+                        if (splitLine.Count() < 4)
+                        {
+                            throw new InputDataFormatException((lineNum + 1).ToString(), file1);
+                        }
+
                         string posTimeStamp = splitLine[0];
 
                         //Convert the string values from the position file into DateTimeOffset
@@ -357,9 +368,8 @@ namespace EchoDataDisplay
                             throw new DateTimeConversionException(posTimeStamp, file3, posDateTimeFormat);
                         }
 
+                        //Add DateTimeOffsets to a list of DateTimeOffsets from the pos file.
                         posDateTimeStamps.Add(posDateTime);
-
-                        //TO-DO check if height needs to be checked
                         //Add values to heightValues
                         heightValues.Add(splitLine[3]);
                     }
@@ -410,9 +420,8 @@ namespace EchoDataDisplay
                             throw new DoubleConversionException(heightValues[closestIndex], file3);
                         }
 
-                        //TO-DO remove posDateTimeStr
-                        posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff",
-                                                                                  CultureInfo.InvariantCulture));
+                        //posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff",
+                        //                                                          CultureInfo.InvariantCulture));
 
                         //Calculates the height adjusted depth and adds it to the its list
                         adjustedDepth1.Add(HeightAdjustedDepth(file1, waterDepth1List[i], heightDatum));
@@ -422,8 +431,7 @@ namespace EchoDataDisplay
                     {
                         adjustedDepth1.Add("");
                         adjustedDepth2.Add("");
-                        //TO-DO remove posDateTimeStr
-                        posDateTimeStr.Add("");
+                        //posDateTimeStr.Add("");
                     }
                     
                 }
@@ -448,8 +456,7 @@ namespace EchoDataDisplay
 
                     if (adjHeight)
                     {
-                        //TO-DO remove posDateTimeStr
-                        row += "," + adjustedDepth1[i] + "," + adjustedDepth2[i] + "," + posDateTimeStr[i];
+                        row += "," + adjustedDepth1[i] + "," + adjustedDepth2[i]; // + "," + posDateTimeStr[i];
                     }
 
                     outputFile.WriteLine(row);
