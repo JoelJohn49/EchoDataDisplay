@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Globalization;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace EchoDataDisplay
 {
@@ -115,6 +116,11 @@ namespace EchoDataDisplay
                             MessageBox.Show(new Form { TopMost = true }, ex.Message,
                                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                         }
+                        catch (InputDataFormatException ex)
+                        {
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
                     }
                 }
             }
@@ -216,8 +222,11 @@ namespace EchoDataDisplay
 
             //TO-DO sanity check each case, check that there are enough characters, enough values in splitLine
             //TO-DO Check what is being added to lists contain correct formatted strings "0.000f, 0.000M" for depth values
-            foreach (string line in lines1)
+
+            //foreach (string line in lines1)
+            for (int lineNum = 0; lineNum < lines1.GetLength(0); lineNum++)
             {
+                string line = lines1[lineNum];
                 string[] checksumRemoved = line.Split(new[] { '*' }, 2);
                 string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
 
@@ -225,7 +234,17 @@ namespace EchoDataDisplay
                 {
                     case "$SDZDA":
                         {
-                            //TO-DO Check each value is in the correct format.
+                            //If the sentence is a sonar depth sensor time reading then it runs this block.
+
+                            //Use regex to check if the NMEA Sentence follows the standard formatting and
+                            //throw an exception if it doesn't.
+                            string dateTimeRGX = @"^\$SDZDA,\d{6}\.\d{2},\d{2},\d{2},\d{4},\d{2},\d{2}";
+                            if (!Regex.IsMatch(line, dateTimeRGX))
+                            {
+                                throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
+                            }
+
+                            //Constructs a string that can be later Parsed into a dateTimeOffset Type.
                             string hours = splitLine[1].Substring(0, 2);
                             string minutes = splitLine[1].Substring(2, 2);
                             string seconds = splitLine[1].Substring(4, 5);
@@ -237,18 +256,51 @@ namespace EchoDataDisplay
                         }
                     case "$SDMTW":
                         {
+                            //If the sentence is a sonar depth sensor water temperature reading
+                            //then it runs this block.
+
+                            //Use regex to check if the NMEA Sentence follows the standard formatting and
+                            //throw an exception if it doesn't.
+                            string tempRGX = @"^\$SDMTW,-*\d+(\.\d+)*,";
+                            if (!Regex.IsMatch(line, tempRGX))
+                            {
+                                throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
+                            }
+                            //Adds the unit 'C' for celcius to the temperature value, remove the following line and
+                            //change it so it just adds spltiLine[1] if the unit isn't needed.
                             string jointLine = splitLine[1] + splitLine[2];
                             waterTempList.Add(jointLine);
                             break;
                         }
                     case "$SDDBT":
                         {
+                            //If the sentence is a sonar depth sensor water depth reading then it runs this block.
+
+                            //Use regex to check if the NMEA Sentence follows the standard formatting and
+                            //throw an exception if it doesn't.
+                            string depthRGX = @"^\$SDDBT,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*";
+                            if (!Regex.IsMatch(line, depthRGX))
+                            {
+                                throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
+                            }
+                            //Adds depth in feet + f (unit of feet) + , + depth in meters + M (unit of meters)
                             string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
                             waterDepth1List.Add(jointLine);
                             break;
                         }
                     case "$GNGGA":
                         {
+                            //If the sentence is a GPS' Global Positioning System Fix Data reading then it runs this block.
+
+                            //Use regex to check if the NMEA Sentence follows the standard formatting and
+                            //throw an exception if it doesn't.
+                            string gpsRGX = @"^\$GNGGA,[^,]*,-*\d+.\d+,[a-zA-Z]*,-*\d+.\d+,[a-zA-Z]*,";
+                            if (!Regex.IsMatch(line, gpsRGX))
+                            {
+                                throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
+                            }
+
+                            //Adds Latitude + North or South + , + Longitude + East or West
                             string jointLine = splitLine[2] + splitLine[3] + "," + splitLine[4] + splitLine[5];
                             latLongList.Add(jointLine);
                             break;
@@ -260,12 +312,24 @@ namespace EchoDataDisplay
                 }
             }
 
-            foreach (string line in lines2)
+            for (int lineNum = 0; lineNum < lines2.GetLength(0); lineNum++)
             {
+                string line = lines2[lineNum];
                 if (line.StartsWith("$SDDBT"))
                 {
+                    //If the sentence is a sonar depth sensor water depth reading then it runs this block.
+
                     string[] checksumRemoved = line.Split(new[] { '*' }, 2);
                     string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
+
+                    //Use regex to check if the NMEA Sentence follows the standard formatting and
+                    //throw an exception if it doesn't.
+                    string depthRGX = @"^\$SDDBT,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*,(\d+(\.\d+)*){0,1},[a-zA-Z]*";
+                    if (!Regex.IsMatch(line, depthRGX))
+                    {
+                        throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
+                    }
+
                     string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
                     waterDepth2List.Add(jointLine);
                 }
