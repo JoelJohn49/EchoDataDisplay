@@ -108,7 +108,8 @@ namespace EchoDataDisplay
                                         textBox2.Text,
                                         saveFilePath,
                                         positionFileCheck.Checked,
-                                        posFileTextBox.Text));
+                                        posFileTextBox.Text,
+                                        pairThresholdInput.Text));
 
                             //Open the csv file at completion.
                             new Process
@@ -205,7 +206,7 @@ namespace EchoDataDisplay
                             await Task.Run(() => writeOutput(files200kList[i],
                                         files450kList[i],
                                         Path.Combine(textBox3.Text, saveFileName),
-                                        false, noPosFile));
+                                        false, noPosFile, noPosFile));
                         }
                         catch (IOException ex)
                         {
@@ -248,6 +249,7 @@ namespace EchoDataDisplay
         {
             openPosFile.Enabled = positionFileCheck.Checked;
             posFileTextBox.Enabled = positionFileCheck.Checked;
+            pairThresholdInput.Enabled = positionFileCheck.Checked;
         }
 
         private void openPosFile_Click(object sender, EventArgs e)
@@ -262,7 +264,12 @@ namespace EchoDataDisplay
             posFileTextBox.Text = openPosFilePath;
         }
 
-        private async Task writeOutput(string file1, string file2, string outputfile, bool adjHeight, string file3)
+        private async Task writeOutput(string file1,
+                                        string file2,
+                                        string outputfile,
+                                        bool adjHeight,
+                                        string file3,
+                                        string timeSpanInput)
         {
             //Read Files
             string[] lines1 = System.IO.File.ReadAllLines(file1);
@@ -454,7 +461,19 @@ namespace EchoDataDisplay
                         throw new DateTimeConversionException(timeStamp, file1, sonarDateTimeFormat);
                     }
 
-                    TimeSpan minSpan = new TimeSpan(0, 0, 5, 0, 0);
+                    //TO-DO change to an input from the form
+                    TimeSpan minSpan;
+                    bool minSpanTried = TimeSpan.TryParseExact(timeSpanInput, @"mm\:ss\.ff",
+                                                CultureInfo.InvariantCulture, out minSpan);
+                    if (!minSpanTried)
+                    {
+                        throw new DateTimeConversionException("Time Stamp Pairing Threshold Does Not Follow the Format"
+                                                                + ": mm:ss.ff. Input recieved was: " + timeSpanInput
+                                                                + Environment.NewLine + "Ensure only numbers have " +
+                                                                "been entered and the minutes and seconds are in the "+
+                                                                "range 00-60");
+                    }
+                    //TimeSpan minSpan = new TimeSpan(0, 0, 5, 0, 0);
                     int closestIndex = 0;
                     bool minSpanChanged = false;
 

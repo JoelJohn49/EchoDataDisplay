@@ -46,9 +46,7 @@ namespace EchoDataDisplay
             this.createFolderOutput = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.pairMilli = new System.Windows.Forms.TextBox();
-            this.pairSecond = new System.Windows.Forms.TextBox();
-            this.pairMinute = new System.Windows.Forms.TextBox();
+            this.pairThresholdInput = new System.Windows.Forms.MaskedTextBox();
             this.label11 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -70,7 +68,6 @@ namespace EchoDataDisplay
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog3 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.maskedTextBox1 = new System.Windows.Forms.MaskedTextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -206,10 +203,7 @@ namespace EchoDataDisplay
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.maskedTextBox1);
-            this.tabPage1.Controls.Add(this.pairMilli);
-            this.tabPage1.Controls.Add(this.pairSecond);
-            this.tabPage1.Controls.Add(this.pairMinute);
+            this.tabPage1.Controls.Add(this.pairThresholdInput);
             this.tabPage1.Controls.Add(this.label11);
             this.tabPage1.Controls.Add(this.label4);
             this.tabPage1.Controls.Add(this.label3);
@@ -232,58 +226,29 @@ namespace EchoDataDisplay
             this.tabPage1.Text = "Merge File Pair";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // pairMilli
+            // pairThresholdInput
             // 
-            this.pairMilli.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.pairMilli.Location = new System.Drawing.Point(574, 312);
-            this.pairMilli.Margin = new System.Windows.Forms.Padding(0);
-            this.pairMilli.MaxLength = 2;
-            this.pairMilli.Name = "pairMilli";
-            this.pairMilli.PlaceholderText = "mm";
-            this.pairMilli.Size = new System.Drawing.Size(16, 16);
-            this.pairMilli.TabIndex = 17;
-            this.pairMilli.Text = "00";
-            this.toolTip1.SetToolTip(this.pairMilli, "Set the maximum time difference between Sonar Time and Position Time");
-            // 
-            // pairSecond
-            // 
-            this.pairSecond.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.pairSecond.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.pairSecond.Location = new System.Drawing.Point(556, 312);
-            this.pairSecond.Margin = new System.Windows.Forms.Padding(0);
-            this.pairSecond.MaxLength = 2;
-            this.pairSecond.Name = "pairSecond";
-            this.pairSecond.PlaceholderText = "mm";
-            this.pairSecond.Size = new System.Drawing.Size(12, 15);
-            this.pairSecond.TabIndex = 16;
-            this.pairSecond.Text = "00";
-            this.toolTip1.SetToolTip(this.pairSecond, "Set the maximum time difference between Sonar Time and Position Time");
-            // 
-            // pairMinute
-            // 
-            this.pairMinute.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.pairMinute.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.pairMinute.Location = new System.Drawing.Point(537, 312);
-            this.pairMinute.Margin = new System.Windows.Forms.Padding(0);
-            this.pairMinute.MaxLength = 2;
-            this.pairMinute.Name = "pairMinute";
-            this.pairMinute.PlaceholderText = "mm";
-            this.pairMinute.Size = new System.Drawing.Size(14, 15);
-            this.pairMinute.TabIndex = 14;
-            this.pairMinute.Text = "05";
-            this.toolTip1.SetToolTip(this.pairMinute, "Set the maximum time difference between Sonar Time and Position Time");
+            this.pairThresholdInput.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.pairThresholdInput.Enabled = false;
+            this.pairThresholdInput.Location = new System.Drawing.Point(534, 308);
+            this.pairThresholdInput.Mask = "00:00.00";
+            this.pairThresholdInput.Name = "pairThresholdInput";
+            this.pairThresholdInput.Size = new System.Drawing.Size(51, 23);
+            this.pairThresholdInput.TabIndex = 18;
+            this.pairThresholdInput.Text = "050000";
+            this.toolTip1.SetToolTip(this.pairThresholdInput, "Threshold that the time difference between Sonar Time Stamps and Position Time St" +
+        "amps have to be under");
             // 
             // label11
             // 
+            this.label11.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label11.AutoSize = true;
-            this.label11.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.label11.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label11.Location = new System.Drawing.Point(315, 311);
+            this.label11.Location = new System.Drawing.Point(311, 311);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(263, 17);
+            this.label11.Size = new System.Drawing.Size(225, 15);
             this.label11.TabIndex = 15;
-            this.label11.Text = "TimeStamp Pairing Threshold (mm:ss.ff):      :     .";
-            this.toolTip1.SetToolTip(this.label11, "\r\n");
+            this.label11.Text = "Time Stamp Pairing Threshold (mm:ss.ff):";
             // 
             // label4
             // 
@@ -489,13 +454,6 @@ namespace EchoDataDisplay
             // 
             this.openFileDialog3.FileName = "openFileDialog3";
             // 
-            // maskedTextBox1
-            // 
-            this.maskedTextBox1.Location = new System.Drawing.Point(315, 335);
-            this.maskedTextBox1.Name = "maskedTextBox1";
-            this.maskedTextBox1.Size = new System.Drawing.Size(100, 23);
-            this.maskedTextBox1.TabIndex = 18;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -557,10 +515,7 @@ namespace EchoDataDisplay
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.TextBox pairMinute;
-        private System.Windows.Forms.TextBox pairMilli;
-        private System.Windows.Forms.TextBox pairSecond;
-        private System.Windows.Forms.MaskedTextBox maskedTextBox1;
+        private System.Windows.Forms.MaskedTextBox pairThresholdInput;
     }
 }
 
