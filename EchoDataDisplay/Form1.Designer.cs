@@ -81,6 +81,7 @@ namespace EchoDataDisplay
             // 
             // openFile1
             // 
+            this.openFile1.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.openFile1.Location = new System.Drawing.Point(45, 156);
             this.openFile1.Name = "openFile1";
             this.openFile1.Size = new System.Drawing.Size(75, 24);
@@ -92,6 +93,7 @@ namespace EchoDataDisplay
             // 
             // textBox1
             // 
+            this.textBox1.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.textBox1.Location = new System.Drawing.Point(45, 186);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(551, 23);
@@ -99,6 +101,7 @@ namespace EchoDataDisplay
             // 
             // openFile2
             // 
+            this.openFile2.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.openFile2.Location = new System.Drawing.Point(45, 241);
             this.openFile2.Name = "openFile2";
             this.openFile2.Size = new System.Drawing.Size(75, 24);
@@ -110,6 +113,7 @@ namespace EchoDataDisplay
             // 
             // textBox2
             // 
+            this.textBox2.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.textBox2.Location = new System.Drawing.Point(45, 269);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(551, 23);
@@ -121,6 +125,7 @@ namespace EchoDataDisplay
             // 
             // createOutput
             // 
+            this.createOutput.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.createOutput.Location = new System.Drawing.Point(290, 411);
             this.createOutput.Name = "createOutput";
             this.createOutput.Size = new System.Drawing.Size(75, 23);
@@ -132,6 +137,7 @@ namespace EchoDataDisplay
             // 
             // label1
             // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(45, 137);
             this.label1.Name = "label1";
@@ -141,6 +147,7 @@ namespace EchoDataDisplay
             // 
             // label2
             // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(45, 222);
             this.label2.Name = "label2";
@@ -150,6 +157,7 @@ namespace EchoDataDisplay
             // 
             // openFolder
             // 
+            this.openFolder.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.openFolder.Location = new System.Drawing.Point(45, 309);
             this.openFolder.Name = "openFolder";
             this.openFolder.Size = new System.Drawing.Size(85, 23);
@@ -161,6 +169,7 @@ namespace EchoDataDisplay
             // 
             // textBox3
             // 
+            this.textBox3.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.textBox3.Location = new System.Drawing.Point(45, 338);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(551, 23);
@@ -168,6 +177,7 @@ namespace EchoDataDisplay
             // 
             // createFolderOutput
             // 
+            this.createFolderOutput.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.createFolderOutput.Location = new System.Drawing.Point(290, 371);
             this.createFolderOutput.Name = "createFolderOutput";
             this.createFolderOutput.Size = new System.Drawing.Size(75, 23);
@@ -214,6 +224,7 @@ namespace EchoDataDisplay
             // 
             // label4
             // 
+            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(55, 77);
             this.label4.Name = "label4";
@@ -236,6 +247,7 @@ namespace EchoDataDisplay
             // 
             // pictureBox1
             // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
             this.pictureBox1.Location = new System.Drawing.Point(387, 411);
             this.pictureBox1.Name = "pictureBox1";
@@ -246,6 +258,7 @@ namespace EchoDataDisplay
             // 
             // openPosFile
             // 
+            this.openPosFile.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.openPosFile.Enabled = false;
             this.openPosFile.Location = new System.Drawing.Point(45, 335);
             this.openPosFile.Name = "openPosFile";
@@ -258,6 +271,7 @@ namespace EchoDataDisplay
             // 
             // posFileTextBox
             // 
+            this.posFileTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.posFileTextBox.Enabled = false;
             this.posFileTextBox.Location = new System.Drawing.Point(45, 365);
             this.posFileTextBox.Name = "posFileTextBox";
@@ -266,6 +280,7 @@ namespace EchoDataDisplay
             // 
             // positionFileCheck
             // 
+            this.positionFileCheck.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.positionFileCheck.AutoSize = true;
             this.positionFileCheck.Location = new System.Drawing.Point(45, 309);
             this.positionFileCheck.Name = "positionFileCheck";
@@ -298,6 +313,7 @@ namespace EchoDataDisplay
             // 
             // label10
             // 
+            this.label10.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(45, 288);
             this.label10.Name = "label10";
@@ -307,6 +323,7 @@ namespace EchoDataDisplay
             // 
             // label9
             // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(45, 182);
             this.label9.MaximumSize = new System.Drawing.Size(400, 0);
@@ -317,6 +334,7 @@ namespace EchoDataDisplay
             // 
             // label8
             // 
+            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(45, 162);
             this.label8.Name = "label8";
@@ -326,6 +344,7 @@ namespace EchoDataDisplay
             // 
             // label7
             // 
+            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(45, 143);
             this.label7.Name = "label7";
@@ -335,6 +354,7 @@ namespace EchoDataDisplay
             // 
             // label6
             // 
+            this.label6.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(64, 77);
             this.label6.Name = "label6";
@@ -345,6 +365,7 @@ namespace EchoDataDisplay
             // 
             // pictureBox2
             // 
+            this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
             this.pictureBox2.Location = new System.Drawing.Point(387, 411);
             this.pictureBox2.Name = "pictureBox2";
@@ -355,6 +376,7 @@ namespace EchoDataDisplay
             // 
             // label5
             // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label5.Location = new System.Drawing.Point(30, 30);
@@ -377,6 +399,7 @@ namespace EchoDataDisplay
             // 
             // pictureBox3
             // 
+            this.pictureBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox3.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox3.Image")));
             this.pictureBox3.Location = new System.Drawing.Point(387, 411);
             this.pictureBox3.Name = "pictureBox3";
@@ -387,12 +410,15 @@ namespace EchoDataDisplay
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(9, 95);
+            this.textBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox4.Location = new System.Drawing.Point(9, 23);
             this.textBox4.Multiline = true;
             this.textBox4.Name = "textBox4";
             this.textBox4.ReadOnly = true;
             this.textBox4.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox4.Size = new System.Drawing.Size(619, 296);
+            this.textBox4.Size = new System.Drawing.Size(619, 368);
             this.textBox4.TabIndex = 0;
             this.textBox4.Text = resources.GetString("textBox4.Text");
             // 
@@ -406,6 +432,7 @@ namespace EchoDataDisplay
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(644, 535);
             this.Controls.Add(this.tabControl1);
+            this.MinimumSize = new System.Drawing.Size(660, 574);
             this.Name = "Form1";
             this.Text = "Echo Sounder Data Merger";
             this.tabControl1.ResumeLayout(false);

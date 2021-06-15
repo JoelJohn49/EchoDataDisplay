@@ -344,14 +344,15 @@
 </value>
   </data>
   <data name="textBox4.Text" xml:space="preserve">
-    <value>*Important Field
+    <value>The Sensor files require the data to be in the following format.
+*Important Field
 
 
 Time and Date from Depth Sounder
 
-       1        2 3 4   5 6 7
-        |         |  |  |    |  |  |
- $SDZDA,HHmmss.ff,xx,xx,xxxx,xx,xx*hh
+                1                    2    3     4       5    6  7
+                 |                     |    |       |        |    |   |
+ $SDZDA,HHmmss.ff,dd,MM,yyyy,xx,xx*hh
 
 Fields:
 1: UTC time (hours (00-24), minutes (00-60), seconds (00-60), milliseconds (00-99))*
@@ -362,11 +363,14 @@ Fields:
 6: Local zone minutes description, 00 to 59, apply same sign as local hours
 7: Checksum
 
+Example: $SDZDA,005608.49,03,05,2021,00,00*41
+
+-------------------------------------------------------------------------------------------------------------------
 
 Depth Below Transducer from Depth Sounder
 
-       1  23  45  67
-        |   | |   | |   | |
+               1    2 3   4  5     6 7
+                |     | |     |   |      | |
  $SDDBT,x.x,f,x.x,M,x.x,F*hh
 
 Fields:
@@ -378,11 +382,14 @@ Fields:
 6: F = Fathoms
 7: Checksum
 
+Example: $SDDBT,1.641,f,0.500,M,0.274,F*00
+
+-------------------------------------------------------------------------------------------------------------------
 
 Mean Temperature of Water from Depth Sounder
 
-        1   2 3
-        |   | |
+                 1    2  3
+                  |     |  |
  $SDMTW,x.x,C*hh
 
 Fields:
@@ -390,12 +397,15 @@ Fields:
 2: C = Celsius*
 3: Checksum
 
+Example: $SDMTW,22.9,C*0D
+
+-------------------------------------------------------------------------------------------------------------------
 
 Global Positioning System Fix Data
-                                                       11
-        1         2       3 4         5 6 7  8   9  10 |  12 13  14   15
-        |         |       | |         | | |  |   |   | |   | |   |    |
- $--GGA,hhmmss.ff,ddmm.mm,a,dddmm.mm,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx*hh
+                                                                                                               11
+                 1                  2                   3  4                     5 6  7   8   9   10  |   12  13  14   15
+                  |                   |                    |   |                      |  |  |    |     |     |   |     |    |     |       |
+ $GNGGA,hhmmss.ff,ddmm.mm,a,dddmm.mm,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx*hh
 
 Fields:
 1: UTC of this position report, hh is hours, mm is minutes, ss is seconds, ff is milliseconds.
@@ -421,6 +431,28 @@ Fields:
 12: M = meters
 13: Age of differential GPS data, time in seconds since last SC104 type 1 or 9 update, null field when DGPS is not used
 14: Differential reference station ID, 0000-1023
-15: Checksum</value>
+15: Checksum
+
+Example: $GNGGA,005609.00,2726.1993,S,15304.8063,E,1,04,0.0,6.4,M,0.0,M,0.0,0000*70
+
+-------------------------------------------------------------------------------------------------------------------
+
+
+The optional Position files require the data to be in the following format.
+*Important Field
+
+ 1        2        3  4                      5 6 7  8
+ |         |         |    |                       |  |  |  |
+ yyyy/MM/dd HH:mm:ss.fff,*,*,x*,...
+
+Fields:
+1: Year (4 digits) followed by a /*
+2: Month (01 to 12) followed by a /*
+3: Day (01 to 31) followed by a white space*
+4: UTC time (hours (00-24), minutes (00-60), seconds (00-60), milliseconds (000-999)) followed by a comma*
+5: Any value followed by a comma*
+6: Any value followed by a comma*
+7: Height Datum to be used for adjusting the depth (number, can have decimals) followed by a comma*
+8: Any number of fields (ignored by the application)</value>
   </data>
 </root>
