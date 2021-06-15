@@ -275,8 +275,7 @@ namespace EchoDataDisplay
             string[] lines1 = System.IO.File.ReadAllLines(file1);
             string[] lines2 = System.IO.File.ReadAllLines(file2);
 
-            //TO-DO Check that all lists have the same length.
-
+            //Empty Lists that the parsed data wil be stored in befor written to a csv
             var timeStampList = new List<string>();
             var waterTempList = new List<string>();
             var waterDepth1List = new List<string>();
@@ -291,8 +290,10 @@ namespace EchoDataDisplay
 
             //List<string> posDateTimeStr = new List<string>();
 
+            //Iterate through lines of the file.
             for (int lineNum = 0; lineNum < lines1.GetLength(0); lineNum++)
             {
+                //Parse the line
                 string line = lines1[lineNum];
                 string[] checksumRemoved = line.Split(new[] { '*' }, 2);
                 string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
@@ -461,7 +462,6 @@ namespace EchoDataDisplay
                         throw new DateTimeConversionException(timeStamp, file1, sonarDateTimeFormat);
                     }
 
-                    //TO-DO change to an input from the form
                     TimeSpan minSpan;
                     bool minSpanTried = TimeSpan.TryParseExact(timeSpanInput, @"mm\:ss\.ff",
                                                 CultureInfo.InvariantCulture, out minSpan);
@@ -518,6 +518,36 @@ namespace EchoDataDisplay
                     }
                     
                 }
+            }
+
+            //Check the length of each list to make sure that they all have the same size.
+            if (timeStampList.Count != waterTempList.Count)
+            {
+                throw new InputDataFormatException("The number of Sonar Mean Water Temperature readings: "
+                                                    + waterTempList.Count.ToString() + " do not match "
+                                                    + "the number of Sonar Time readings: "
+                                                    + timeStampList.Count.ToString() + " in file: " + file1);
+            }
+            if (timeStampList.Count != latLongList.Count)
+            {
+                throw new InputDataFormatException("The number of Latitude and Longitude readings: "
+                                                    + latLongList.Count.ToString() + " do not match "
+                                                    + "the number of Sonar Time readings: "
+                                                    + timeStampList.Count.ToString() + " in file: " + file1);
+            }
+            if (timeStampList.Count != waterDepth1List.Count)
+            {
+                throw new InputDataFormatException("The number of Sonar Depth readings: "
+                                                    + waterDepth1List.Count.ToString() + " do not match "
+                                                    + "the number of Sonar Time readings: "
+                                                    + timeStampList.Count.ToString() + " in file: " + file1);
+            }
+            if (timeStampList.Count != waterDepth2List.Count)
+            {
+                throw new InputDataFormatException("The number of Sonar Depth readings: "
+                                                    + waterDepth2List.Count.ToString() + " do not match "
+                                                    + "the number of Sonar Time readings: "
+                                                    + timeStampList.Count.ToString() + " in file: " + file2);
             }
 
             //Write the string array to a new file.
