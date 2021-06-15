@@ -45,8 +45,19 @@ namespace EchoDataDisplay
             textBox2.Text = file2Path;
         }
 
-        private void createOutput_Click(object sender, EventArgs e)
+        private async void createOutput_Click(object sender, EventArgs e)
         {
+            //Make Buttons and text fields un-interactable so the user cannot change anyhting while the program is
+            //running
+            createOutput.Enabled = false;
+            textBox1.ReadOnly = true;
+            textBox2.ReadOnly = true;
+            posFileTextBox.ReadOnly = true;
+            openFile1.Enabled = false;
+            openFile2.Enabled = false;
+            positionFileCheck.Enabled = false;
+            openPosFile.Enabled = false;
+
             bool noErrors = true;
 
             if (!File.Exists(textBox1.Text) || !File.Exists(textBox2.Text))
@@ -91,11 +102,11 @@ namespace EchoDataDisplay
                         //Read from the files and write to the save file
                         try
                         {
-                            writeOutput(textBox1.Text,
+                            await Task.Run(() => writeOutput(textBox1.Text,
                                         textBox2.Text,
                                         saveFilePath,
                                         positionFileCheck.Checked,
-                                        posFileTextBox.Text);
+                                        posFileTextBox.Text));
 
                             //Open the csv file at completion.
                             new Process
@@ -128,6 +139,14 @@ namespace EchoDataDisplay
                     }
                 }
             }
+            createOutput.Enabled = true;
+            textBox1.ReadOnly = false;
+            textBox2.ReadOnly = false;
+            posFileTextBox.ReadOnly = false;
+            openFile1.Enabled = true;
+            openFile2.Enabled = true;
+            positionFileCheck.Enabled = true;
+            openPosFile.Enabled = positionFileCheck.Checked;
         }
 
         private void openFolder_Click(object sender, EventArgs e)
@@ -139,8 +158,13 @@ namespace EchoDataDisplay
             }
         }
 
-        private void createFolderOutput_Click(object sender, EventArgs e)
+        private async void createFolderOutput_Click(object sender, EventArgs e)
         {
+            //Make Buttons and text fields un-interactable so the user cannot change anyhting while the program is
+            //running
+            createFolderOutput.Enabled = false;
+            textBox3.ReadOnly = true;
+            openFolder.Enabled = false;
             if (!Directory.Exists(textBox3.Text))
             {
                 MessageBox.Show(new Form { TopMost = true }, "Missing Folder Path", "Error",
@@ -169,12 +193,36 @@ namespace EchoDataDisplay
                 {
                     for (int i = 0; i < files200k.Count(); i++)
                     {
-                        string saveFileName = files200kList_compare[i].Split(new[] { '.' }, 2)[0] + ".csv";
-                        string temp = "temp";
-                        writeOutput(files200kList[i],
-                                    files450kList[i],
-                                    Path.Combine(textBox3.Text, saveFileName),
-                                    positionFileCheck.Checked, temp);
+                        try
+                        {
+                            string saveFileName = files200kList_compare[i].Split(new[] { '.' }, 2)[0] + ".csv";
+                            string noPosFile = "noPosFile";
+                            await Task.Run(() => writeOutput(files200kList[i],
+                                        files450kList[i],
+                                        Path.Combine(textBox3.Text, saveFileName),
+                                        false, noPosFile));
+                        }
+                        catch (IOException ex)
+                        {
+                            //Let the user know that the save file is open or can't be written to
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                        catch (DoubleConversionException ex)
+                        {
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                        catch (DateTimeConversionException ex)
+                        {
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                        catch (InputDataFormatException ex)
+                        {
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
                     }
                 }
                 else
@@ -184,6 +232,10 @@ namespace EchoDataDisplay
 
                 }
             }
+            Process.Start("explorer.exe",textBox3.Text);
+            createFolderOutput.Enabled = true;
+            textBox3.ReadOnly = false;
+            openFolder.Enabled = true;
         }
 
         private void positionFileCheck_CheckedChanged(object sender, EventArgs e)
@@ -204,11 +256,13 @@ namespace EchoDataDisplay
             posFileTextBox.Text = openPosFilePath;
         }
 
-        private void writeOutput(string file1, string file2, string outputfile, bool adjHeight, string file3)
+        private async Task writeOutput(string file1, string file2, string outputfile, bool adjHeight, string file3)
         {
             //Read Files
             string[] lines1 = System.IO.File.ReadAllLines(file1);
             string[] lines2 = System.IO.File.ReadAllLines(file2);
+
+            //TO-DO Check that all lists have the same length.
 
             var timeStampList = new List<string>();
             var waterTempList = new List<string>();
