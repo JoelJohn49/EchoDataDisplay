@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ * author: Joel John for Scout Aerial
+ * email: joeljohn49@gmail.com
+ * last modified: 15/06/2021
+*/
+
+using System;
 using System.Runtime.Serialization;
 
 namespace EchoDataDisplay

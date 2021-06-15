@@ -1,4 +1,9 @@
-﻿
+﻿/*
+ * author: Joel John for Scout Aerial
+ * email: joeljohn49@gmail.com
+ * last modified: 15/06/2021
+*/
+
 namespace EchoDataDisplay
 {
     partial class Form1
@@ -68,6 +73,7 @@ namespace EchoDataDisplay
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog3 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.textBox5 = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -415,6 +421,7 @@ namespace EchoDataDisplay
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.textBox5);
             this.tabPage3.Controls.Add(this.pictureBox3);
             this.tabPage3.Controls.Add(this.textBox4);
             this.tabPage3.Location = new System.Drawing.Point(4, 24);
@@ -453,6 +460,21 @@ namespace EchoDataDisplay
             // openFileDialog3
             // 
             this.openFileDialog3.FileName = "openFileDialog3";
+            // 
+            // textBox5
+            // 
+            this.textBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.textBox5.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.textBox5.ForeColor = System.Drawing.SystemColors.ControlDark;
+            this.textBox5.Location = new System.Drawing.Point(9, 448);
+            this.textBox5.Multiline = true;
+            this.textBox5.Name = "textBox5";
+            this.textBox5.ReadOnly = true;
+            this.textBox5.Size = new System.Drawing.Size(273, 51);
+            this.textBox5.TabIndex = 13;
+            this.textBox5.Text = "Created by Joel John with Scout Aerial for Ocebile\r\nEmail: joeljohn49@gmail.com\r\n" +
+    "Last Modified: 15/06/2021";
             // 
             // Form1
             // 
@@ -516,6 +538,7 @@ namespace EchoDataDisplay
         private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.MaskedTextBox pairThresholdInput;
+        private System.Windows.Forms.TextBox textBox5;
     }
 }
 

@@ -1,8 +1,12 @@
-﻿using System;
+﻿/*
+ * author: Joel John for Scout Aerial
+ * email: joeljohn49@gmail.com
+ * last modified: 15/06/2021
+*/
+
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
