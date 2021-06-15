@@ -58,6 +58,8 @@ namespace EchoDataDisplay
             positionFileCheck.Enabled = false;
             openPosFile.Enabled = false;
 
+            this.UseWaitCursor = true;
+
             bool noErrors = true;
 
             if (!File.Exists(textBox1.Text) || !File.Exists(textBox2.Text))
@@ -147,6 +149,7 @@ namespace EchoDataDisplay
             openFile2.Enabled = true;
             positionFileCheck.Enabled = true;
             openPosFile.Enabled = positionFileCheck.Checked;
+            this.UseWaitCursor = false;
         }
 
         private void openFolder_Click(object sender, EventArgs e)
@@ -165,6 +168,8 @@ namespace EchoDataDisplay
             createFolderOutput.Enabled = false;
             textBox3.ReadOnly = true;
             openFolder.Enabled = false;
+            this.UseWaitCursor = true;
+
             if (!Directory.Exists(textBox3.Text))
             {
                 MessageBox.Show(new Form { TopMost = true }, "Missing Folder Path", "Error",
@@ -236,6 +241,7 @@ namespace EchoDataDisplay
             createFolderOutput.Enabled = true;
             textBox3.ReadOnly = false;
             openFolder.Enabled = true;
+            this.UseWaitCursor = false;
         }
 
         private void positionFileCheck_CheckedChanged(object sender, EventArgs e)
@@ -552,5 +558,6 @@ namespace EchoDataDisplay
             string adjustedDepthString = String.Format("{0:0.0000}", Math.Round(adjustedDepthVal, 4));
             return adjustedDepthString;
         }
+
     }
 }
