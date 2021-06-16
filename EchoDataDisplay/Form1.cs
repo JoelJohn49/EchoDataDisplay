@@ -1,7 +1,7 @@
 ﻿/*
  * author: Joel John for Scout Aerial
  * email: joeljohn49@gmail.com
- * last modified: 15/06/2021
+ * last modified: 16/06/2021
 */
 
 using System;
@@ -120,7 +120,6 @@ namespace EchoDataDisplay
                             {
                                 StartInfo = new ProcessStartInfo(saveFilePath){ UseShellExecute = true }
                             }.Start();
-                            //MessageBox.Show("Output File Created", "Save Successful");
                         }
                         catch (IOException ex)
                         {
@@ -281,6 +280,7 @@ namespace EchoDataDisplay
 
             //Empty Lists that the parsed data wil be stored in befor written to a csv
             var timeStampList = new List<string>();
+            var timeStampList2 = new List<string>();
             var waterTempList = new List<string>();
             var waterDepth1List = new List<string>();
             var waterDepth2List = new List<string>();
@@ -292,7 +292,7 @@ namespace EchoDataDisplay
 
             List<DateTimeOffset> posDateTimeStamps = new List<DateTimeOffset>();
 
-            //List<string> posDateTimeStr = new List<string>();
+            List<string> posDateTimeStr = new List<string>();
 
             //Iterate through lines of the file.
             for (int lineNum = 0; lineNum < lines1.GetLength(0); lineNum++)
@@ -342,8 +342,8 @@ namespace EchoDataDisplay
                             }
                             //Adds the unit 'C' for celcius to the temperature value, remove the following line and
                             //change it so it just adds spltiLine[1] if the unit isn't needed.
-                            string jointLine = splitLine[1] + splitLine[2];
-                            waterTempList.Add(jointLine);
+                            //string jointLine = splitLine[1] + splitLine[2];
+                            waterTempList.Add(splitLine[1]);
                             break;
                         }
                     case "$SDDBT":
@@ -359,7 +359,8 @@ namespace EchoDataDisplay
                                     (lineNum + 1).ToString(), file1);
                             }
                             //Adds depth in feet + f (unit of feet) + , + depth in meters + M (unit of meters)
-                            string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
+                            //string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
+                            string jointLine = splitLine[1] + "," + splitLine[3];
                             waterDepth1List.Add(jointLine);
                             break;
                         }
@@ -377,8 +378,28 @@ namespace EchoDataDisplay
                                     (lineNum + 1).ToString(), file1);
                             }
 
+                            string jointLine = "";
+
+                            //Adds a "-" if the Latitude is South
+                            if (splitLine[3].Equals("S", StringComparison.OrdinalIgnoreCase))
+                            {
+                                jointLine += "-";
+                            }
+
+                            //Adds the Latitude and a comma delimeter
+                            jointLine += splitLine[2] + ",";
+
+                            //Adds a "-" if the Longitude is West
+                            if (splitLine[5].Equals("W", StringComparison.OrdinalIgnoreCase))
+                            {
+                                jointLine += "-";
+                            }
+
+                            //Adds the Longitude
+                            jointLine += splitLine[4];
+
                             //Adds Latitude + North or South + , + Longitude + East or West
-                            string jointLine = splitLine[2] + splitLine[3] + "," + splitLine[4] + splitLine[5];
+                            //string jointLine = splitLine[2] + splitLine[3] + "," + splitLine[4] + splitLine[5];
                             latLongList.Add(jointLine);
                             break;
                         }
@@ -392,23 +413,64 @@ namespace EchoDataDisplay
             for (int lineNum = 0; lineNum < lines2.GetLength(0); lineNum++)
             {
                 string line = lines2[lineNum];
+                string[] checksumRemoved = line.Split(new[] { '*' }, 2);
+                string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
+
+                switch (splitLine[0])
+                {
+                    case "$SDZDA":
+                        {
+                            string dateTimeRGX = @"^\$SDZDA,\d{6}\.\d{2},\d{2},\d{2},\d{4},\d{2},\d{2}";
+                            if (!Regex.IsMatch(line, dateTimeRGX))
+                            {
+                                throw new InputDataFormatException(splitLine[0].Substring(3),
+                                    (lineNum + 1).ToString(), file2);
+                            }
+                            //Constructs a string that can be later Parsed into a dateTimeOffset Type.
+                            string hours = splitLine[1].Substring(0, 2);
+                            string minutes = splitLine[1].Substring(2, 2);
+                            string seconds = splitLine[1].Substring(4, 5);
+
+                            string jointLine = hours + ":" + minutes + ":" + seconds + ","
+                                               + splitLine[2] + "/" + splitLine[3] + "/" + splitLine[4];
+                            timeStampList2.Add(jointLine);
+                            break;
+                        }
+                    case "$SDDBT":
+                        {
+                            string depthRGX = @"^\$SDDBT(,(\d+(\.\d+)*){0,1},[a-zA-Z]*){2}";
+                            if (!Regex.IsMatch(line, depthRGX))
+                            {
+                                throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file2);
+                            }
+                            string jointLine = splitLine[1] + "," + splitLine[3];
+                            waterDepth2List.Add(jointLine);
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+
                 if (line.StartsWith("$SDDBT"))
                 {
                     //If the sentence is a sonar depth sensor water depth reading then it runs this block.
 
-                    string[] checksumRemoved = line.Split(new[] { '*' }, 2);
-                    string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
+                    //string[] checksumRemoved = line.Split(new[] { '*' }, 2);
+                    //string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
 
                     //Use regex to check if the NMEA Sentence follows the standard formatting and
                     //throw an exception if it doesn't.
-                    string depthRGX = @"^\$SDDBT(,(\d+(\.\d+)*){0,1},[a-zA-Z]*){2}";
-                    if (!Regex.IsMatch(line, depthRGX))
-                    {
-                        throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
-                    }
+                    //string depthRGX = @"^\$SDDBT(,(\d+(\.\d+)*){0,1},[a-zA-Z]*){2}";
+                    //if (!Regex.IsMatch(line, depthRGX))
+                    //{
+                    //    throw new InputDataFormatException(splitLine[0].Substring(3), (lineNum + 1).ToString(), file1);
+                    //}
 
-                    string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
-                    waterDepth2List.Add(jointLine);
+                    //string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
+                    //string jointLine = splitLine[1] + "," + splitLine[3];
+                    //waterDepth2List.Add(jointLine);
                 }
             }
 
@@ -507,8 +569,8 @@ namespace EchoDataDisplay
                             throw new DoubleConversionException(heightValues[closestIndex], file3);
                         }
 
-                        //posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff",
-                        //                                                          CultureInfo.InvariantCulture));
+                        posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff",
+                                                                                  CultureInfo.InvariantCulture));
 
                         //Calculates the height adjusted depth and adds it to the its list
                         adjustedDepth1.Add(HeightAdjustedDepth(file1, waterDepth1List[i], heightDatum));
@@ -518,7 +580,7 @@ namespace EchoDataDisplay
                     {
                         adjustedDepth1.Add("");
                         adjustedDepth2.Add("");
-                        //posDateTimeStr.Add("");
+                        posDateTimeStr.Add("");
                     }
                     
                 }
@@ -558,22 +620,22 @@ namespace EchoDataDisplay
             FileStream fileStream = new FileStream(outputfile, FileMode.Create, FileAccess.ReadWrite);
             using (StreamWriter outputFile = new StreamWriter(fileStream))
             {
-                string heading = "Time (HH:mm:ss.00),Date,Water Temp (C),Latitude,Longitude," +
+                string heading = "Sonar 1 Time (HH:mm:ss.00),Sonar 1 Date,Sonar 2 Time (HH:mm:ss.00),Sonar 2 Date,Water Temp (C),Latitude,Longitude," +
                     "Depth 1 (ft),Depth 1 (m),Depth 2 (ft),Depth 2 (m)";
 
                 if (adjHeight)
                 {
-                    heading += ",Adjusted Depth 1,Adjusted Depth 2";
+                    heading += ",Adjusted Depth 1,Adjusted Depth 2,Position Time Stamp";
                 }
                 outputFile.WriteLine(heading);
                 for (int i = 0; i < timeStampList.Count; i++)
                 {
-                    string row = timeStampList[i] + "," + waterTempList[i] + "," + latLongList[i] + "," +
+                    string row = timeStampList[i] + "," + timeStampList2[i] + "," + waterTempList[i] + "," + latLongList[i] + "," +
                                 waterDepth1List[i] + "," + waterDepth2List[i];
 
                     if (adjHeight)
                     {
-                        row += "," + adjustedDepth1[i] + "," + adjustedDepth2[i]; // + "," + posDateTimeStr[i];
+                        row += "," + adjustedDepth1[i] + "," + adjustedDepth2[i] + "," + posDateTimeStr[i];
                     }
 
                     outputFile.WriteLine(row);
@@ -597,8 +659,9 @@ namespace EchoDataDisplay
 
         public string HeightAdjustedDepth(string file, string depth, double heightDatum)
         {
+            //Take the depth in metres from the depth reading
             string sonarDepth = depth.Split(new[] { ',' }, 2)[1];
-            sonarDepth = sonarDepth.Remove(sonarDepth.Length - 1);
+            //sonarDepth = sonarDepth.Remove(sonarDepth.Length - 1);
 
             double sonarDepth_Val;
             bool sonarDepth_ValTried = double.TryParse(RemoveSpecialCharacters(sonarDepth), out sonarDepth_Val);
