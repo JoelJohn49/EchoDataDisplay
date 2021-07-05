@@ -73,7 +73,7 @@
   <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAABQAAAAQACAIAAAAx8WMUAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAL
-        EAAACxABrSO9dQAA/eVJREFUeF7s/XecVOXd//H//vh9k6h0hWXpvS9bKUuXVXTpdWGtxGjuNFLuW1JI
+        DwAACw8BkvkDpQAA/eVJREFUeF7s/XecVOXd//H//vh9k6h0hWXpvS9bKUuXVXTpdWGtxGjuNFLuW1JI
         TCfcKWoSbzAm0RQNMfbeS4wx2FEUpKrRGI29ICBlf78zc9p1PufM7Jyp58z1uh7PPxKZc/WZc72ZYeb/
         c0yPKgAAAAAAyh4BGAAAAACgBQIwAAAAAEALBGAAAAAAgBYIwAAAAAAALRCAAQAAAABaIAADAAAAALRA
         AAYAAAAAaIEADAAAAADQAgEYAAAAAKAFAjAAAAAAQAsEYAAAAACAFgjAAAAAAAAtEIABAAAAAFogAAMA
@@ -1279,6 +1279,15 @@ Fields:
   </metadata>
   <metadata name="openFileDialog3.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>602, 17</value>
+  </metadata>
+  <metadata name="openFileDialog4.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>839, 17</value>
+  </metadata>
+  <metadata name="saveFileDialog2.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>979, 17</value>
+  </metadata>
+  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>59</value>
   </metadata>
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

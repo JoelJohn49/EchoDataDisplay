@@ -72,11 +72,26 @@ namespace EchoDataDisplay
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog3 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.singleFileTextBox = new System.Windows.Forms.TextBox();
+            this.openSingleFile = new System.Windows.Forms.Button();
+            this.createSingleFile = new System.Windows.Forms.Button();
+            this.openFileDialog4 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
+            this.singlePairThresholdInput = new System.Windows.Forms.MaskedTextBox();
+            this.label15 = new System.Windows.Forms.Label();
+            this.singleOpenPosFile = new System.Windows.Forms.Button();
+            this.singlePosFileTextBox = new System.Windows.Forms.TextBox();
+            this.singlePosCheckBox = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
             // openFileDialog1
@@ -145,9 +160,9 @@ namespace EchoDataDisplay
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(45, 137);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(166, 15);
+            this.label1.Size = new System.Drawing.Size(163, 15);
             this.label1.TabIndex = 5;
-            this.label1.Text = "Select the First Sensor Text File\r\n";
+            this.label1.Text = "Select the 200k Sonar Text File\r\n";
             // 
             // label2
             // 
@@ -155,9 +170,9 @@ namespace EchoDataDisplay
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(45, 222);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(183, 15);
+            this.label2.Size = new System.Drawing.Size(163, 15);
             this.label2.TabIndex = 6;
-            this.label2.Text = "Select the Second Sensor Text File\r\n";
+            this.label2.Text = "Select the 450k Sonar Text File\r\n";
             // 
             // openFolder
             // 
@@ -193,6 +208,7 @@ namespace EchoDataDisplay
             // 
             // tabControl1
             // 
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
@@ -200,12 +216,13 @@ namespace EchoDataDisplay
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(644, 535);
+            this.tabControl1.Size = new System.Drawing.Size(644, 580);
             this.tabControl1.TabIndex = 10;
             this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.createOutput);
             this.tabPage1.Controls.Add(this.pictureBox1);
             this.tabPage1.Controls.Add(this.pairThresholdInput);
             this.tabPage1.Controls.Add(this.label11);
@@ -216,7 +233,6 @@ namespace EchoDataDisplay
             this.tabPage1.Controls.Add(this.positionFileCheck);
             this.tabPage1.Controls.Add(this.label1);
             this.tabPage1.Controls.Add(this.label2);
-            this.tabPage1.Controls.Add(this.createOutput);
             this.tabPage1.Controls.Add(this.textBox2);
             this.tabPage1.Controls.Add(this.openFile2);
             this.tabPage1.Controls.Add(this.textBox1);
@@ -224,18 +240,18 @@ namespace EchoDataDisplay
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(636, 507);
+            this.tabPage1.Size = new System.Drawing.Size(636, 552);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Merge File Pair";
+            this.tabPage1.Text = "Process Sonar Pair";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(371, 394);
+            this.pictureBox1.Location = new System.Drawing.Point(337, 411);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(252, 110);
+            this.pictureBox1.Size = new System.Drawing.Size(299, 138);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 11;
             this.pictureBox1.TabStop = false;
@@ -282,9 +298,9 @@ namespace EchoDataDisplay
             this.label3.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label3.Location = new System.Drawing.Point(115, 30);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(425, 41);
+            this.label3.Size = new System.Drawing.Size(420, 41);
             this.label3.TabIndex = 12;
-            this.label3.Text = "Merge Two Echo Sounder Files";
+            this.label3.Text = "Process Echo Sounder File Pair";
             this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // openPosFile
@@ -336,9 +352,9 @@ namespace EchoDataDisplay
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(636, 507);
+            this.tabPage2.Size = new System.Drawing.Size(636, 552);
             this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Batch Merge";
+            this.tabPage2.Text = "Batch Process Pairs";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // label10
@@ -411,7 +427,7 @@ namespace EchoDataDisplay
             this.tabPage3.Location = new System.Drawing.Point(4, 24);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(636, 507);
+            this.tabPage3.Size = new System.Drawing.Size(636, 552);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Help";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -422,7 +438,7 @@ namespace EchoDataDisplay
             this.textBox5.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.textBox5.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox5.ForeColor = System.Drawing.SystemColors.ControlDark;
-            this.textBox5.Location = new System.Drawing.Point(9, 448);
+            this.textBox5.Location = new System.Drawing.Point(9, 493);
             this.textBox5.Multiline = true;
             this.textBox5.Name = "textBox5";
             this.textBox5.ReadOnly = true;
@@ -441,7 +457,7 @@ namespace EchoDataDisplay
             this.textBox4.Name = "textBox4";
             this.textBox4.ReadOnly = true;
             this.textBox4.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox4.Size = new System.Drawing.Size(619, 368);
+            this.textBox4.Size = new System.Drawing.Size(619, 413);
             this.textBox4.TabIndex = 0;
             this.textBox4.Text = resources.GetString("textBox4.Text");
             // 
@@ -449,16 +465,162 @@ namespace EchoDataDisplay
             // 
             this.openFileDialog3.FileName = "openFileDialog3";
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.singlePairThresholdInput);
+            this.tabPage4.Controls.Add(this.label15);
+            this.tabPage4.Controls.Add(this.singleOpenPosFile);
+            this.tabPage4.Controls.Add(this.singlePosFileTextBox);
+            this.tabPage4.Controls.Add(this.singlePosCheckBox);
+            this.tabPage4.Controls.Add(this.createSingleFile);
+            this.tabPage4.Controls.Add(this.label12);
+            this.tabPage4.Controls.Add(this.label13);
+            this.tabPage4.Controls.Add(this.label14);
+            this.tabPage4.Controls.Add(this.singleFileTextBox);
+            this.tabPage4.Controls.Add(this.openSingleFile);
+            this.tabPage4.Location = new System.Drawing.Point(4, 24);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage4.Size = new System.Drawing.Size(636, 552);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Process Sonar File ";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // label12
+            // 
+            this.label12.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(203, 77);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(230, 15);
+            this.label12.TabIndex = 18;
+            this.label12.Text = "Formats data from a sonar file to a csv file.";
+            // 
+            // label13
+            // 
+            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label13.AutoSize = true;
+            this.label13.Font = new System.Drawing.Font("Segoe UI", 22F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label13.Location = new System.Drawing.Point(110, 30);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(364, 41);
+            this.label13.TabIndex = 17;
+            this.label13.Text = "Process Echo Sounder File";
+            this.label13.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // label14
+            // 
+            this.label14.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(40, 163);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(136, 15);
+            this.label14.TabIndex = 16;
+            this.label14.Text = "Select the Sonar Text File\r\n";
+            // 
+            // singleFileTextBox
+            // 
+            this.singleFileTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.singleFileTextBox.Location = new System.Drawing.Point(40, 212);
+            this.singleFileTextBox.Name = "singleFileTextBox";
+            this.singleFileTextBox.Size = new System.Drawing.Size(551, 23);
+            this.singleFileTextBox.TabIndex = 15;
+            // 
+            // openSingleFile
+            // 
+            this.openSingleFile.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.openSingleFile.Location = new System.Drawing.Point(40, 182);
+            this.openSingleFile.Name = "openSingleFile";
+            this.openSingleFile.Size = new System.Drawing.Size(75, 24);
+            this.openSingleFile.TabIndex = 14;
+            this.openSingleFile.Text = "Open File";
+            this.toolTip1.SetToolTip(this.openSingleFile, "Select a Sensor File to Merge From");
+            this.openSingleFile.UseVisualStyleBackColor = true;
+            this.openSingleFile.Click += new System.EventHandler(this.openSingleFile_Click);
+            // 
+            // createSingleFile
+            // 
+            this.createSingleFile.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.createSingleFile.Location = new System.Drawing.Point(290, 411);
+            this.createSingleFile.Name = "createSingleFile";
+            this.createSingleFile.Size = new System.Drawing.Size(75, 23);
+            this.createSingleFile.TabIndex = 19;
+            this.createSingleFile.Text = "Create File";
+            this.toolTip1.SetToolTip(this.createSingleFile, "Create The Output File and Open It");
+            this.createSingleFile.UseVisualStyleBackColor = true;
+            this.createSingleFile.Click += new System.EventHandler(this.createSingleFile_Click);
+            // 
+            // openFileDialog4
+            // 
+            this.openFileDialog4.FileName = "openFileDialog4";
+            // 
+            // singlePairThresholdInput
+            // 
+            this.singlePairThresholdInput.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.singlePairThresholdInput.Enabled = false;
+            this.singlePairThresholdInput.Location = new System.Drawing.Point(532, 282);
+            this.singlePairThresholdInput.Mask = "00:00.00";
+            this.singlePairThresholdInput.Name = "singlePairThresholdInput";
+            this.singlePairThresholdInput.Size = new System.Drawing.Size(51, 23);
+            this.singlePairThresholdInput.TabIndex = 24;
+            this.singlePairThresholdInput.Text = "050000";
+            this.toolTip1.SetToolTip(this.singlePairThresholdInput, "The max time difference the Sonar Time Stamps and the Position Time Stamps can ha" +
+        "ve.\r\nUsefull for missing data.");
+            // 
+            // label15
+            // 
+            this.label15.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label15.Location = new System.Drawing.Point(309, 285);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(225, 15);
+            this.label15.TabIndex = 23;
+            this.label15.Text = "Time Stamp Pairing Threshold (mm:ss.ff):";
+            // 
+            // singleOpenPosFile
+            // 
+            this.singleOpenPosFile.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.singleOpenPosFile.Enabled = false;
+            this.singleOpenPosFile.Location = new System.Drawing.Point(43, 309);
+            this.singleOpenPosFile.Name = "singleOpenPosFile";
+            this.singleOpenPosFile.Size = new System.Drawing.Size(75, 23);
+            this.singleOpenPosFile.TabIndex = 22;
+            this.singleOpenPosFile.Text = "Open File";
+            this.toolTip1.SetToolTip(this.singleOpenPosFile, "Select a Position File to Calculate Adjusted Height From");
+            this.singleOpenPosFile.UseVisualStyleBackColor = true;
+            // 
+            // singlePosFileTextBox
+            // 
+            this.singlePosFileTextBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.singlePosFileTextBox.Enabled = false;
+            this.singlePosFileTextBox.Location = new System.Drawing.Point(43, 339);
+            this.singlePosFileTextBox.Name = "singlePosFileTextBox";
+            this.singlePosFileTextBox.Size = new System.Drawing.Size(551, 23);
+            this.singlePosFileTextBox.TabIndex = 21;
+            // 
+            // singlePosCheckBox
+            // 
+            this.singlePosCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.singlePosCheckBox.AutoSize = true;
+            this.singlePosCheckBox.Location = new System.Drawing.Point(43, 283);
+            this.singlePosCheckBox.Name = "singlePosCheckBox";
+            this.singlePosCheckBox.Size = new System.Drawing.Size(173, 19);
+            this.singlePosCheckBox.TabIndex = 20;
+            this.singlePosCheckBox.Text = "Select Optional Position File";
+            this.toolTip1.SetToolTip(this.singlePosCheckBox, "(Optional) Toggle Whether A Position File Will Be Selected");
+            this.singlePosCheckBox.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(644, 535);
+            this.ClientSize = new System.Drawing.Size(644, 580);
             this.Controls.Add(this.tabControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(660, 574);
             this.Name = "Form1";
-            this.Text = "Echo Sounder Data Merger";
+            this.Text = "Echo Sounder Data Processor";
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
@@ -467,6 +629,8 @@ namespace EchoDataDisplay
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -509,6 +673,20 @@ namespace EchoDataDisplay
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.MaskedTextBox pairThresholdInput;
         private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Button createSingleFile;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.TextBox singleFileTextBox;
+        private System.Windows.Forms.Button openSingleFile;
+        private System.Windows.Forms.OpenFileDialog openFileDialog4;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog2;
+        private System.Windows.Forms.MaskedTextBox singlePairThresholdInput;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Button singleOpenPosFile;
+        private System.Windows.Forms.TextBox singlePosFileTextBox;
+        private System.Windows.Forms.CheckBox singlePosCheckBox;
     }
 }
 

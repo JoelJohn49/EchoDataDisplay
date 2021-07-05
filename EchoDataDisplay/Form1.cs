@@ -25,6 +25,18 @@ namespace EchoDataDisplay
             InitializeComponent();
         }
 
+        private void openSingleFile_Click(object sender, EventArgs e)
+        {
+            openFileDialog4.Title = "Open First Sensor log File";
+            openFileDialog4.Filter = "log files (*.log)|*.log|All files (*.*)|*.*";
+            openFileDialog4.FilterIndex = 1;
+            openFileDialog4.ShowDialog();
+
+            string singleFilePath = openFileDialog4.FileName;
+
+            singleFileTextBox.Text = singleFilePath;
+        }
+
         private void openFile1_Click(object sender, EventArgs e)
         {
             openFileDialog1.Title = "Open First Sensor log File";
@@ -47,6 +59,99 @@ namespace EchoDataDisplay
             string file2Path = openFileDialog2.FileName;
 
             textBox2.Text = file2Path;
+        }
+
+        private async void createSingleFile_Click(object sender, EventArgs e)
+        {
+            //Make Buttons and text fields un-interactable so the user cannot change anyhting while the program is
+            //running
+            createSingleFile.Enabled = false;
+            singleFileTextBox.ReadOnly = true;
+            openSingleFile.Enabled = false;
+            //TO-DO ensure position controls are disabled and enabled if added
+
+            this.UseWaitCursor = true;
+
+            bool noErrors = true;
+
+            if (!File.Exists(singleFileTextBox.Text))
+            {
+                MessageBox.Show(new Form { TopMost = true }, "Missing Input Sensor Files", "Error",
+                                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                noErrors = false;
+            }
+            /*else if (positionFileCheck.Checked)
+            {
+                if (!File.Exists(posFileTextBox.Text))
+                {
+                    MessageBox.Show(new Form { TopMost = true }, "Missing Input Position File", "Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    noErrors = false;
+                }
+                else if (posFileTextBox.Text.Equals(textBox1.Text) || posFileTextBox.Text.Equals(textBox2.Text))
+                {
+                    MessageBox.Show(new Form { TopMost = true }, "The Position File Is Also Selected As a Sensor File",
+                                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    noErrors = false;
+                }
+            }*/
+            if (noErrors)
+            {
+                saveFileDialog2.Title = "Choose File Destination";
+                saveFileDialog2.DefaultExt = "csv";
+                saveFileDialog2.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
+                saveFileDialog2.FilterIndex = 1;
+
+                if (saveFileDialog2.ShowDialog() == DialogResult.OK)
+                {
+                    string saveFilePath = saveFileDialog2.FileName;
+                    if (!String.IsNullOrEmpty(saveFilePath))
+                    {
+                        //Read from the files and write to the save file
+                        try
+                        {
+                            await Task.Run(() => writeSingleOutput(singleFileTextBox.Text,
+                                        saveFilePath,
+                                        positionFileCheck.Checked,
+                                        posFileTextBox.Text,
+                                        pairThresholdInput.Text));
+
+                            //Open the csv file at completion.
+                            new Process
+                            {
+                                StartInfo = new ProcessStartInfo(saveFilePath) { UseShellExecute = true }
+                            }.Start();
+                        }
+                        catch (IOException ex)
+                        {
+                            //Let the user know that the save file is open or can't be written to
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                        catch (DoubleConversionException ex)
+                        {
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                        catch (DateTimeConversionException ex)
+                        {
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                        catch (InputDataFormatException ex)
+                        {
+                            MessageBox.Show(new Form { TopMost = true }, ex.Message,
+                                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        }
+                    }
+                }
+            }
+
+            createSingleFile.Enabled = true;
+            singleFileTextBox.ReadOnly = false;
+            openSingleFile.Enabled = true;
+
+            this.UseWaitCursor = false;
         }
 
         private async void createOutput_Click(object sender, EventArgs e)
@@ -293,6 +398,15 @@ namespace EchoDataDisplay
         void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
                 tabControl1.SelectedTab.Controls.Add(pictureBox1);
+        }
+
+        private async Task writeSingleOutput(string file,
+                                                string outputfile,
+                                                bool adjHeight,
+                                                string file3,
+                                                string timeSpanInput)
+        {
+
         }
 
         private async Task writeOutput(string file1,
@@ -713,6 +827,5 @@ namespace EchoDataDisplay
             string LatDDString = String.Format("{0:0.000000000}", Math.Round(LatDD, 9));
             return LatDDString;
         }
-
     }
 }
