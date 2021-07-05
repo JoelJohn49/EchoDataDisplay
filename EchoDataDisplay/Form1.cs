@@ -196,6 +196,7 @@ namespace EchoDataDisplay
                 //and can be compared.
                 List<string> files200kList_compare = files200kList.Select(s => s.Replace("200kHz_", "")).ToList();
                 List<string> files450kList_compare = files450kList.Select(s => s.Replace("450kHz_", "")).ToList();
+                List<string> savedfiles = new List<string>();
 
                 //Check that both arrays have the same size and each element has a pair in the other array.
                 if (files200kList_compare.SequenceEqual(files450kList_compare))
@@ -205,11 +206,33 @@ namespace EchoDataDisplay
                         try
                         {
                             string saveFileName = files200kList_compare[i].Split(new[] { '.' }, 2)[0] + ".csv";
+                            string saveFilePath = Path.Combine(textBox3.Text, saveFileName);
+                            string combinedFilePath = Path.Combine(textBox3.Text, "combined.csv");
                             string noPosFile = "noPosFile";
                             await Task.Run(() => writeOutput(files200kList[i],
                                         files450kList[i],
-                                        Path.Combine(textBox3.Text, saveFileName),
+                                        saveFilePath,
                                         false, noPosFile, noPosFile));
+
+                            //TO-DO Add checks to ensure both files can't be opened while being processed
+                            if (File.Exists(Path.Combine(textBox3.Text,"combined.csv")))
+                            {
+                                StreamWriter fileDest = new StreamWriter(combinedFilePath, true);
+                                string[] lines = File.ReadAllLines(saveFilePath);
+                                lines = lines.Skip(1).ToArray(); // Skip header row
+
+                                foreach (string line in lines)
+                                {
+                                    fileDest.WriteLine(line);
+                                }
+
+                                fileDest.Close();
+                            }
+                            else
+                            {
+                                File.Copy(saveFilePath, combinedFilePath);
+                            }
+
                         }
                         catch (IOException ex)
                         {
