@@ -613,7 +613,7 @@ namespace EchoDataDisplay
             using (StreamWriter outputFile = new StreamWriter(fileStream))
             {
                 string heading = "Latitude,Longitude,Depth 1 (m),Depth 2 (m),Sonar 1 Time (HH:mm:ss.00),Sonar 1 Date," + 
-                    "Sonar 2 Time (HH:mm:ss.00),Sonar 2 Date,Water Temp (C),";
+                    "Sonar 2 Time (HH:mm:ss.00),Sonar 2 Date,Water Temp (C)";
 
                 if (adjHeight)
                 {
