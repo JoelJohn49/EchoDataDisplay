@@ -68,7 +68,10 @@ namespace EchoDataDisplay
             createSingleFile.Enabled = false;
             singleFileTextBox.ReadOnly = true;
             openSingleFile.Enabled = false;
-            //TO-DO ensure position controls are disabled and enabled if added
+
+            singlePosFileTextBox.ReadOnly = true;
+            singlePosCheckBox.Enabled = false;
+            singleOpenPosFile.Enabled = false;
 
             this.UseWaitCursor = true;
 
@@ -80,21 +83,21 @@ namespace EchoDataDisplay
                                 MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 noErrors = false;
             }
-            /*else if (positionFileCheck.Checked)
+            else if (singlePosCheckBox.Checked)
             {
-                if (!File.Exists(posFileTextBox.Text))
+                if (!File.Exists(singlePosFileTextBox.Text))
                 {
                     MessageBox.Show(new Form { TopMost = true }, "Missing Input Position File", "Error",
                                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     noErrors = false;
                 }
-                else if (posFileTextBox.Text.Equals(textBox1.Text) || posFileTextBox.Text.Equals(textBox2.Text))
+                else if (singlePosFileTextBox.Text.Equals(singleFileTextBox.Text))
                 {
                     MessageBox.Show(new Form { TopMost = true }, "The Position File Is Also Selected As a Sensor File",
                                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     noErrors = false;
                 }
-            }*/
+            }
             if (noErrors)
             {
                 saveFileDialog2.Title = "Choose File Destination";
@@ -112,9 +115,9 @@ namespace EchoDataDisplay
                         {
                             await Task.Run(() => writeSingleOutput(singleFileTextBox.Text,
                                         saveFilePath,
-                                        positionFileCheck.Checked,
-                                        posFileTextBox.Text,
-                                        pairThresholdInput.Text));
+                                        singlePosCheckBox.Checked,
+                                        singlePosFileTextBox.Text,
+                                        singlePairThresholdInput.Text));
 
                             //Open the csv file at completion.
                             new Process
@@ -150,6 +153,10 @@ namespace EchoDataDisplay
             createSingleFile.Enabled = true;
             singleFileTextBox.ReadOnly = false;
             openSingleFile.Enabled = true;
+
+            singlePosFileTextBox.ReadOnly = false;
+            singlePosCheckBox.Enabled = true;
+            singleOpenPosFile.Enabled = true;
 
             this.UseWaitCursor = false;
         }
@@ -376,11 +383,30 @@ namespace EchoDataDisplay
             this.UseWaitCursor = false;
         }
 
+        private void singlePosCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            singleOpenPosFile.Enabled = singlePosCheckBox.Checked;
+            singlePosFileTextBox.Enabled = singlePosCheckBox.Checked;
+            singlePairThresholdInput.Enabled = singlePosCheckBox.Checked;
+        }
+
         private void positionFileCheck_CheckedChanged(object sender, EventArgs e)
         {
             openPosFile.Enabled = positionFileCheck.Checked;
             posFileTextBox.Enabled = positionFileCheck.Checked;
             pairThresholdInput.Enabled = positionFileCheck.Checked;
+        }
+
+        private void singleOpenPosFile_Click(object sender, EventArgs e)
+        {
+            openFileDialog5.Title = "Open Optional Postion File";
+            openFileDialog5.Filter = "All files (*.*)|*.*";
+            openFileDialog5.FilterIndex = 0;
+            openFileDialog5.ShowDialog();
+
+            string openPosFilePath = openFileDialog5.FileName;
+
+            singlePosFileTextBox.Text = openPosFilePath;
         }
 
         private void openPosFile_Click(object sender, EventArgs e)
@@ -406,7 +432,303 @@ namespace EchoDataDisplay
                                                 string file3,
                                                 string timeSpanInput)
         {
+            //Read Files
+            string[] lines1 = System.IO.File.ReadAllLines(file);
 
+            //Empty Lists that the parsed data wil be stored in befor written to a csv
+            var timeStampList = new List<string>();
+            var waterTempList = new List<string>();
+            var waterDepthList = new List<string>();
+            var latLongList = new List<string>();
+
+            var heightValues = new List<string>();
+            var adjustedDepth = new List<string>();
+
+            List<DateTimeOffset> posDateTimeStamps = new List<DateTimeOffset>();
+
+            List<string> posDateTimeStr = new List<string>();
+
+            //Iterate through lines of the file.
+            for (int lineNum = 0; lineNum < lines1.GetLength(0); lineNum++)
+            {
+                //Parse the line
+                string line = lines1[lineNum];
+                string[] checksumRemoved = line.Split(new[] { '*' }, 2);
+                string[] splitLine = checksumRemoved[0].Split(new[] { ',' });
+
+                switch (splitLine[0])
+                {
+                    case "$SDZDA":
+                        {
+                            //If the sentence is a sonar depth sensor time reading then it runs this block.
+
+                            //Use regex to check if the NMEA Sentence follows the standard formatting and
+                            //throw an exception if it doesn't.
+                            string dateTimeRGX = @"^\$SDZDA,\d{6}\.\d{2},\d{2},\d{2},\d{4},\d{2},\d{2}";
+                            if (!Regex.IsMatch(line, dateTimeRGX))
+                            {
+                                throw new InputDataFormatException(splitLine[0].Substring(3),
+                                    (lineNum + 1).ToString(), file);
+                            }
+
+                            //Constructs a string that can be later Parsed into a dateTimeOffset Type.
+                            string hours = splitLine[1].Substring(0, 2);
+                            string minutes = splitLine[1].Substring(2, 2);
+                            string seconds = splitLine[1].Substring(4, 5);
+
+                            string jointLine = hours + ":" + minutes + ":" + seconds + ","
+                                               + splitLine[2] + "/" + splitLine[3] + "/" + splitLine[4];
+                            timeStampList.Add(jointLine);
+                            break;
+                        }
+                    case "$SDMTW":
+                        {
+                            //If the sentence is a sonar depth sensor water temperature reading
+                            //then it runs this block.
+
+                            //Use regex to check if the NMEA Sentence follows the standard formatting and
+                            //throw an exception if it doesn't.
+                            string tempRGX = @"^\$SDMTW,-*\d+(\.\d+)*,";
+                            if (!Regex.IsMatch(line, tempRGX))
+                            {
+                                throw new InputDataFormatException(splitLine[0].Substring(3),
+                                    (lineNum + 1).ToString(), file);
+                            }
+                            //Adds the unit 'C' for celcius to the temperature value, remove the following line and
+                            //change it so it just adds spltiLine[1] if the unit isn't needed.
+                            //string jointLine = splitLine[1] + splitLine[2];
+                            waterTempList.Add(splitLine[1]);
+                            break;
+                        }
+                    case "$SDDBT":
+                        {
+                            //If the sentence is a sonar depth sensor water depth reading then it runs this block.
+
+                            //Use regex to check if the NMEA Sentence follows the standard formatting and
+                            //throw an exception if it doesn't.
+                            string depthRGX = @"^\$SDDBT(,(\d+(\.\d+)*){0,1},[a-zA-Z]*){2}";
+                            if (!Regex.IsMatch(line, depthRGX))
+                            {
+                                throw new InputDataFormatException(splitLine[0].Substring(3),
+                                    (lineNum + 1).ToString(), file);
+                            }
+                            //Adds depth in feet + f (unit of feet) + , + depth in meters + M (unit of meters)
+                            //string jointLine = splitLine[1] + splitLine[2] + "," + splitLine[3] + splitLine[4];
+                            string jointLine = splitLine[3];
+                            waterDepthList.Add(jointLine);
+                            break;
+                        }
+                    case "$GNGGA":
+                        {
+                            //If the sentence is a GPS' Global Positioning System Fix Data reading then
+                            //it runs this block.
+
+                            //Use regex to check if the NMEA Sentence follows the standard formatting and
+                            //throw an exception if it doesn't.
+                            string gpsRGX = @"^\$GNGGA,[^,]*,-*\d+.\d+,[a-zA-Z]*,-*\d+.\d+,[a-zA-Z]*,";
+                            if (!Regex.IsMatch(line, gpsRGX))
+                            {
+                                throw new InputDataFormatException(splitLine[0].Substring(3),
+                                    (lineNum + 1).ToString(), file);
+                            }
+
+                            string jointLine = "";
+
+                            //Adds a "-" if the Latitude is South
+                            if (splitLine[3].Equals("S", StringComparison.OrdinalIgnoreCase))
+                            {
+                                jointLine += "-";
+                            }
+
+                            //Adds the Latitude and a comma delimeter
+                            //jointLine += splitLine[2] + ",";
+                            //jointLine += splitLine[2].Substring(0, 2) + " " + splitLine[2][2..] + ",";
+
+                            jointLine += DecimalDegreesConvertion(file, splitLine[2], 2) + ",";
+
+
+                            //Adds a "-" if the Longitude is West
+                            if (splitLine[5].Equals("W", StringComparison.OrdinalIgnoreCase))
+                            {
+                                jointLine += "-";
+                            }
+
+                            //Adds the Longitude
+                            //jointLine += splitLine[4];
+                            //jointLine += splitLine[4].Substring(0, 3) + " " + splitLine[4][3..];
+
+                            jointLine += DecimalDegreesConvertion(file, splitLine[4], 3);
+
+                            //Adds Latitude + North or South + , + Longitude + East or West
+                            //string jointLine = splitLine[2] + splitLine[3] + "," + splitLine[4] + splitLine[5];
+                            latLongList.Add(jointLine);
+                            break;
+                        }
+                    default:
+                        {
+                            break;
+                        }
+                }
+            }
+
+            if (adjHeight)
+            {
+                string[] lines3 = System.IO.File.ReadAllLines(file3);
+
+                for (int lineNum = 0; lineNum < lines3.GetLength(0); lineNum++)
+                {
+                    string line = lines3[lineNum];
+                    if (!line.StartsWith("%"))
+                    {
+                        string[] splitLine = line.Split(new[] { ',' });
+
+                        if (splitLine.Count() < 4)
+                        {
+                            throw new InputDataFormatException((lineNum + 1).ToString(), file);
+                        }
+
+                        string posTimeStamp = splitLine[0];
+
+                        //Convert the string values from the position file into DateTimeOffset
+                        DateTimeOffset posDateTime;
+                        string posDateTimeFormat = "yyyy/MM/dd HH:mm:ss.fff";
+                        bool posDateTimeTried = DateTimeOffset.TryParseExact(posTimeStamp + " UTC +0000",
+                                                posDateTimeFormat + " 'UTC' zzz", CultureInfo.InvariantCulture,
+                                                DateTimeStyles.AllowWhiteSpaces, out posDateTime);
+
+                        if (!posDateTimeTried)
+                        {
+                            throw new DateTimeConversionException(posTimeStamp, file3, posDateTimeFormat);
+                        }
+
+                        //Add DateTimeOffsets to a list of DateTimeOffsets from the pos file.
+                        posDateTimeStamps.Add(posDateTime);
+                        //Add values to heightValues
+                        heightValues.Add(splitLine[3]);
+                    }
+                }
+
+                //Loop through each DateTime from the first sensor file
+                for (int i = 0; i < timeStampList.Count; i++)
+                {
+                    string timeStamp = timeStampList[i] + " UTC +0000";
+
+                    //Convert the string values from the first sonar file into DateTimeOffset
+                    DateTimeOffset sonarDateTime;
+                    string sonarDateTimeFormat = "HH:mm:ss.ff,dd/MM/yyyy 'UTC' zzz";
+                    bool sonarDateTimeTried = DateTimeOffset.TryParseExact(timeStamp, sonarDateTimeFormat,
+                                                CultureInfo.InvariantCulture, DateTimeStyles.AllowWhiteSpaces,
+                                                out sonarDateTime);
+
+                    if (!sonarDateTimeTried)
+                    {
+                        throw new DateTimeConversionException(timeStamp, file, sonarDateTimeFormat);
+                    }
+
+                    TimeSpan minSpan;
+                    bool minSpanTried = TimeSpan.TryParseExact(timeSpanInput, @"mm\:ss\.ff",
+                                                CultureInfo.InvariantCulture, out minSpan);
+                    if (!minSpanTried)
+                    {
+                        throw new DateTimeConversionException("Time Stamp Pairing Threshold Does Not Follow the Format"
+                                                                + ": mm:ss.ff. Input recieved was: " + timeSpanInput
+                                                                + Environment.NewLine + "Ensure only numbers have " +
+                                                                "been entered and the minutes and seconds are in the " +
+                                                                "range 00-60");
+                    }
+                    //TimeSpan minSpan = new TimeSpan(0, 0, 5, 0, 0);
+                    int closestIndex = 0;
+                    bool minSpanChanged = false;
+
+                    //TO-DO can be made more efficient as time stamps should be in order
+                    //Loop through each DateTime from the position file.
+                    for (int j = 0; j < posDateTimeStamps.Count; j++)
+                    {
+                        TimeSpan difference = sonarDateTime.Subtract(posDateTimeStamps[j]).Duration();
+
+                        int comp = TimeSpan.Compare(difference, minSpan);
+                        if (comp < 0)
+                        {
+                            minSpan = difference;
+                            closestIndex = j;
+                            minSpanChanged = true;
+                        }
+                    }
+
+                    //Check if a DateTime suitable pair from the pos file was found or if it's using the defualt value
+                    if (minSpanChanged)
+                    {
+                        double heightDatum;
+                        bool heightDatumTried = double.TryParse(RemoveSpecialCharacters(heightValues[closestIndex]),
+                                                out heightDatum);
+                        if (!heightDatumTried)
+                        {
+                            throw new DoubleConversionException(heightValues[closestIndex], file3);
+                        }
+
+                        posDateTimeStr.Add(posDateTimeStamps[closestIndex].ToString("HH:mm:ss.fff",
+                                                                                  CultureInfo.InvariantCulture));
+
+                        //Calculates the height adjusted depth and adds it to the its list
+                        adjustedDepth.Add(HeightAdjustedDepth(file, waterDepthList[i], heightDatum));
+                    }
+                    else
+                    {
+                        adjustedDepth.Add("");
+                        posDateTimeStr.Add("");
+                    }
+
+                }
+            }
+
+            //Check the length of each list to make sure that they all have the same size.
+            if (timeStampList.Count != waterTempList.Count)
+            {
+                throw new InputDataFormatException("The number of Sonar Mean Water Temperature readings: "
+                                                    + waterTempList.Count.ToString() + " do not match "
+                                                    + "the number of Sonar Time readings: "
+                                                    + timeStampList.Count.ToString() + " in file: " + file);
+            }
+            if (timeStampList.Count != latLongList.Count)
+            {
+                throw new InputDataFormatException("The number of Latitude and Longitude readings: "
+                                                    + latLongList.Count.ToString() + " do not match "
+                                                    + "the number of Sonar Time readings: "
+                                                    + timeStampList.Count.ToString() + " in file: " + file);
+            }
+            if (timeStampList.Count != waterDepthList.Count)
+            {
+                throw new InputDataFormatException("The number of Sonar Depth readings: "
+                                                    + waterDepthList.Count.ToString() + " do not match "
+                                                    + "the number of Sonar Time readings: "
+                                                    + timeStampList.Count.ToString() + " in file: " + file);
+            }
+
+            //Write the string array to a new file.
+            FileStream fileStream = new FileStream(outputfile, FileMode.Create, FileAccess.ReadWrite);
+            using (StreamWriter outputFile = new StreamWriter(fileStream))
+            {
+                string heading = "Latitude,Longitude,Depth (m),Sonar Time (HH:mm:ss.00),Sonar Date,Water Temp (C)";
+
+                if (adjHeight)
+                {
+                    heading += ",Adjusted Depth,Position Time Stamp";
+                }
+                outputFile.WriteLine(heading);
+                for (int i = 0; i < timeStampList.Count; i++)
+                {
+                    string row = latLongList[i] + "," + waterDepthList[i] + "," + 
+                        timeStampList[i] + "," + waterTempList[i];
+
+                    if (adjHeight)
+                    {
+                        row += "," + adjustedDepth[i] + "," + posDateTimeStr[i];
+                    }
+
+                    outputFile.WriteLine(row);
+                }
+            }
+            fileStream.Close();
         }
 
         private async Task writeOutput(string file1,
