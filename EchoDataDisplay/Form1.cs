@@ -540,6 +540,17 @@ namespace EchoDataDisplay
                                 jointLine += "-";
                             }
 
+                            //TO-DO cleanup unesed code
+
+
+                            //Adds a leading 0 if the Latitude needs it to be in the ddmm.mm format.
+                            //string[] latitudeRaw = splitLine[2].Split(new[] { '.' });
+                            //if (latitudeRaw[0].Length == 3)
+                            //{
+                            //    jointLine += "0";
+                            //}
+
+
                             //Adds the Latitude and a comma delimeter
                             //jointLine += splitLine[2] + ",";
                             //jointLine += splitLine[2].Substring(0, 2) + " " + splitLine[2][2..] + ",";
@@ -1128,8 +1139,24 @@ namespace EchoDataDisplay
 
         public string DecimalDegreesConvertion(string file, string coordinate, int degreeChars)
         {
-            string latDegString = coordinate.Substring(0, degreeChars);
-            string latMinString = coordinate[degreeChars..];
+
+            // TO-DO cleanup unused code
+
+
+            //Adds leading 0 if the Latitude or Longitude needs it to be in their appropriate format.
+            //while (coordinate.length < degreechars + 2)
+            //{
+            //    coordinate = "0" + coordinate;
+            //}
+
+            int decimalIndex = coordinate.IndexOf(".");
+            int minStartIndex = decimalIndex - 2;
+
+            string latDegString = coordinate.Substring(0, minStartIndex);
+            string latMinString = coordinate[minStartIndex..];
+
+            //string latDegString = coordinate.Substring(0, degreeChars);
+            //string latMinString = coordinate[degreeChars..];
 
             double latDeg;
             bool latDegTried = double.TryParse(RemoveSpecialCharacters(latDegString), out latDeg);
